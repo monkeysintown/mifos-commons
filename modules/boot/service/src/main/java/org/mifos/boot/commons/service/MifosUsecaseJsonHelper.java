@@ -19,8 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.Nullable;
 import org.mifos.commons.boot.core.exception.MifosUsecaseException;
 import org.mifos.commons.boot.core.model.MifosError;
-import org.mifos.commons.boot.core.model.MifosRequest;
-import org.mifos.commons.boot.core.model.MifosResponse;
+import org.mifos.commons.boot.core.pattern.MifosUsecase;
 import org.springframework.stereotype.Service;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
@@ -32,7 +31,7 @@ public class MifosUsecaseJsonHelper {
     private final ObjectMapper mapper;
 
     @SuppressWarnings("unchecked")
-    public Class<? extends MifosRequest> resolveRequest(@Nullable String type) {
+    public Class<? extends MifosUsecase.MifosRequest> resolveRequest(@Nullable String type) {
         if (StringUtils.isEmpty(type)) {
             // "Request type not configured. Set 'type' field or '_type' variable."
             throw new MifosUsecaseException(MifosError.of(MIFOS_COMMONS_ERROR_USECASE_REQUEST_TYPE_NULL));
@@ -41,20 +40,20 @@ public class MifosUsecaseJsonHelper {
         try {
             var clazz = Class.forName(type);
 
-            if (!MifosRequest.class.isAssignableFrom(clazz)) {
+            if (!MifosUsecase.MifosRequest.class.isAssignableFrom(clazz)) {
                 // "Class " + type + " does not implement Request interface"
                 throw new MifosUsecaseException(
                         MifosError.of(MIFOS_COMMONS_ERROR_USECASE_REQUEST_TYPE_ILLEGAL, List.of(type)));
             }
 
-            return (Class<? extends MifosRequest>) clazz;
+            return (Class<? extends MifosUsecase.MifosRequest>) clazz;
         } catch (ClassNotFoundException cnfe) {
             throw new MifosUsecaseException(
                     MifosError.of(MIFOS_COMMONS_ERROR_USECASE_REQUEST_TYPE_NOT_FOUND, cnfe, List.of(type)));
         }
     }
 
-    public MifosRequest parseRequest(@Nullable Object input, Class<? extends MifosRequest> clazz) {
+    public MifosUsecase.MifosRequest parseRequest(@Nullable Object input, Class<? extends MifosUsecase.MifosRequest> clazz) {
         if (input == null) {
             // try to create empty instance
             try {
@@ -79,7 +78,7 @@ public class MifosUsecaseJsonHelper {
         return mapper.readValue(json, clazz);
     }
 
-    public String serializeResponse(MifosResponse response) {
+    public String serializeResponse(MifosUsecase.MifosResponse response) {
         try {
             return mapper.writeValueAsString(response);
         } catch (JacksonException je) {

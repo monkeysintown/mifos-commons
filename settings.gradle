@@ -25,9 +25,9 @@ rootProject.name = "mifos-commons-boot"
 
 mifos {
     project {
-        groupId = "org.mifos.commons.boot"
-        description = "Mifos Commons Boot Library"
-        basePackage = "org.mifos.commons.boot"
+        groupId = "org.mifos.commons"
+        description = "Mifos Commons Library"
+        basePackage = "org.mifos.commons"
         inceptionYear = "2026"
     }
     developers {

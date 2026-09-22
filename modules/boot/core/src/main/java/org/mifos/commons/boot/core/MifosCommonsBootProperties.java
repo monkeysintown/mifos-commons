@@ -45,9 +45,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class MifosCommonsBootProperties {
     @Builder.Default
     private String errorUrl = "https://doc.mifos.org/projects/common/errors";
+
     private String tui;
 
-    public static enum MifosCommonsBootTuiType {
-        PICO, SHELL, TAMBOUI
+    public enum MifosCommonsBootTuiType {
+        PICO,
+        SHELL,
+        TAMBOUI
     }
 }

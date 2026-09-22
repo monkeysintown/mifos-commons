@@ -5,15 +5,15 @@
 ///
 package org.mifos.commons.boot.cli.pico.autoconfigure;
 
+import static org.mifos.commons.boot.cli.pico.MifosCliPicoConstants.MIFOS_COMMONS_BOOT_CLI_PICO_COMMAND_PACKAGE;
+import static org.mifos.commons.boot.cli.pico.MifosCliPicoConstants.MIFOS_COMMONS_BOOT_CLI_PICO_RUNNER_PACKAGE;
+import static org.mifos.commons.boot.core.MifosCommonsBootConstants.MIFOS_COMMONS_BOOT_DEBUG_PROPERTY_TUI_TYPE;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
-
-import static org.mifos.commons.boot.cli.pico.MifosCliPicoConstants.MIFOS_COMMONS_BOOT_CLI_PICO_COMMAND_PACKAGE;
-import static org.mifos.commons.boot.cli.pico.MifosCliPicoConstants.MIFOS_COMMONS_BOOT_CLI_PICO_RUNNER_PACKAGE;
-import static org.mifos.commons.boot.core.MifosCommonsBootConstants.MIFOS_COMMONS_BOOT_DEBUG_PROPERTY_TUI_TYPE;
 
 @Slf4j
 @RequiredArgsConstructor

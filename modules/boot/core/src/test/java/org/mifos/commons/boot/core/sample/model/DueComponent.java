@@ -3,9 +3,8 @@
 /// License, v. 2.0. If a copy of the MPL was not distributed with this
 /// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ///
-package org.mifos.commons.boot.core.model;
+package org.mifos.commons.boot.core.sample.model;
 
-import java.io.Serializable;
+import org.javamoney.moneta.Money;
 
-/// Marker interface for response objects
-public interface MifosResponse extends Serializable {}
+public record DueComponent(int installmentNumber, DueComponentType type, Money due) {}

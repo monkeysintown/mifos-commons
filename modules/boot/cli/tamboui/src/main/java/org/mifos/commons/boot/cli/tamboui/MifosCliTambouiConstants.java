@@ -5,9 +5,9 @@
 ///
 package org.mifos.commons.boot.cli.tamboui;
 
-import lombok.experimental.UtilityClass;
-
 import static org.mifos.commons.boot.core.MifosCommonsBootConstants.MIFOS_COMMONS_BOOT_CLI_PACKAGE;
+
+import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class MifosCliTambouiConstants {

@@ -3,10 +3,9 @@
 /// License, v. 2.0. If a copy of the MPL was not distributed with this
 /// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ///
-package org.mifos.commons.boot.core.usecase;
+package org.mifos.commons.boot.core.pattern;
 
-import org.mifos.commons.boot.core.model.MifosRequest;
-import org.mifos.commons.boot.core.model.MifosResponse;
+import java.io.Serializable;
 
 /// Represents a use case in the Mifos platform, encapsulating a specific business operation.
 ///
@@ -19,6 +18,12 @@ import org.mifos.commons.boot.core.model.MifosResponse;
 /// @author <a href="https://github.com/vidakovic" target="_blank">Aleksandar Vidakovic</a>
 /// @since 1.0.0
 @FunctionalInterface
-public interface MifosUsecase<REQ extends MifosRequest, RES extends MifosResponse> {
+public interface MifosUsecase<REQ extends MifosUsecase.MifosRequest, RES extends MifosUsecase.MifosResponse> {
     RES execute(REQ request);
+
+    /// Marker interface for request objects
+    interface MifosRequest extends Serializable {}
+
+    /// Marker interface for response objects
+    interface MifosResponse extends Serializable {}
 }

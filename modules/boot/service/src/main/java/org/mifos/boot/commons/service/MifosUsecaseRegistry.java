@@ -16,9 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mifos.commons.boot.core.exception.MifosUsecaseException;
 import org.mifos.commons.boot.core.model.MifosError;
-import org.mifos.commons.boot.core.model.MifosRequest;
-import org.mifos.commons.boot.core.model.MifosResponse;
-import org.mifos.commons.boot.core.usecase.MifosUsecase;
+import org.mifos.commons.boot.core.pattern.MifosUsecase;
 import org.springframework.stereotype.Service;
 
 /// Registry for usecase implementations. Auto-discovers all Usecase beans and indexes them by request type.
@@ -36,7 +34,7 @@ public final class MifosUsecaseRegistry {
     }
 
     /// Register a usecase manually (for testing or dynamic registration).
-    public <REQ extends MifosRequest, RES extends MifosResponse> void register(MifosUsecase<REQ, RES> usecase) {
+    public <REQ extends MifosUsecase.MifosRequest, RES extends MifosUsecase.MifosResponse> void register(MifosUsecase<REQ, RES> usecase) {
         var requestType = usecase.getClass();
 
         if (registry.containsKey(requestType)) {
@@ -49,7 +47,7 @@ public final class MifosUsecaseRegistry {
 
     /// Find usecase for the given request type.
     @SuppressWarnings("unchecked")
-    public <REQ extends MifosRequest, RES extends MifosResponse> Optional<MifosUsecase<REQ, RES>> find(
+    public <REQ extends MifosUsecase.MifosRequest, RES extends MifosUsecase.MifosResponse> Optional<MifosUsecase<REQ, RES>> find(
             Class<?> requestType) {
         var usecase = registry.get(requestType);
 
@@ -61,11 +59,11 @@ public final class MifosUsecaseRegistry {
     }
 
     /// Find usecase for a request instance.
-    public <REQ extends MifosRequest, RES extends MifosResponse> Optional<MifosUsecase<REQ, RES>> find(REQ request) {
+    public <REQ extends MifosUsecase.MifosRequest, RES extends MifosUsecase.MifosResponse> Optional<MifosUsecase<REQ, RES>> find(REQ request) {
         return find(request.getClass());
     }
 
-    public MifosResponse execute(MifosRequest request) {
+    public MifosUsecase.MifosResponse execute(MifosUsecase.MifosRequest request) {
         return find(request)
                 .map(uc -> uc.execute(request))
                 .orElseThrow(() -> new MifosUsecaseException(MifosError.of(MIFOS_COMMONS_ERROR_USECASE_NOT_FOUND)));

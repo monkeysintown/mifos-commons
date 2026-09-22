@@ -20,7 +20,7 @@ import reactor.core.publisher.Mono;
 ///
 /// This filter is designed for use in a Spring WebFlux application. It reads the incoming
 /// [org.springframework.web.server.ServerWebExchange], extracts headers whose names are configured in
-/// [MifosTransportRestProperties#getHeaders()], and stores their first value into the Reactor `Context`
+/// [MifosTransportRestProperties#getHeaders()], and stores their first value into the Reactor `MifosFlowContext`
 /// under a lower‑cased key. This allows services (e.g., reactive REST clients) to access those headers without
 /// explicitly passing them through method calls.
 ///

@@ -8,10 +8,9 @@ package org.mifos.commons.boot.cli.tamboui.autoconfigure;
 import dev.tamboui.tui.TuiConfig;
 import dev.tamboui.tui.bindings.BindingSets;
 import dev.tamboui.tui.error.RenderErrorHandler;
+import java.time.Duration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.time.Duration;
 
 @Configuration
 class MifosCliTambouiConfiguration {
