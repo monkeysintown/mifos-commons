@@ -48,7 +48,7 @@ public class MifosError implements Serializable {
     private Throwable cause;
 
     public static MifosError of(MifosErrorCode code) {
-        return MifosError.builder().code(code).build();
+        return MifosError.builder().code(code).args(List.of()).build();
     }
 
     public static MifosError of(MifosErrorCode code, List<Object> args) {
