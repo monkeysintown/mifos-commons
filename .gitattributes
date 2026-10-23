@@ -1,15 +1,47 @@
 #
-# https://help.github.com/articles/dealing-with-line-endings/
+# This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
+# distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Linux start script should use lf
-/gradlew        text eol=lf
 
-# These are Windows script files and should use crlf
-*.bat           text eol=crlf
+* text=auto eol=lf
 
-# Binary files should be left untouched
-*.jar           binary
+*.bat text eol=crlf
+*.cmd text eol=crlf
+gradlew text eol=lf
+*.sh text eol=lf
 
-*.java ai-training=false
+*.java text ai-training=false
+*.gradle text ai-training=false
+*.groovy text ai-training=false
+*.kt text ai-training=false
+*.kts text ai-training=false
+*.scala text ai-training=false
+*.properties text ai-training=false
+*.json text ai-training=false
+*.json5 text ai-training=false
+*.toml text ai-training=false
+*.xml text ai-training=false
+*.yml text ai-training=false
+*.yaml text ai-training=false
+*.md text ai-training=false
+*.adoc text ai-training=false
 
-*.adoc ai-training=false
+*.jar binary
+*.zip binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ogg binary
+*.wav binary
+*.nbt binary
+*.dat binary
+*.class binary
+*.ttf binary
+*.otf binary
+*.so binary
+*.dll binary
+*.dylib binary
+
+# Keep the wrapper jar out of diffs, it is verified by checksum
+**/gradle/wrapper/gradle-wrapper.jar binary linguist-vendored linguist-generated
