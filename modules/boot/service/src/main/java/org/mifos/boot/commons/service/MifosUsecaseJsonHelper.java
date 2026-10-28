@@ -53,7 +53,8 @@ public class MifosUsecaseJsonHelper {
         }
     }
 
-    public MifosUsecase.MifosRequest parseRequest(@Nullable Object input, Class<? extends MifosUsecase.MifosRequest> clazz) {
+    public MifosUsecase.MifosRequest parseRequest(
+            @Nullable Object input, Class<? extends MifosUsecase.MifosRequest> clazz) {
         if (input == null) {
             // try to create empty instance
             try {

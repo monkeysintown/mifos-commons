@@ -11,6 +11,7 @@ import static org.mifos.commons.boot.core.exception.MifosException.MifosCommonEr
 import static org.mifos.commons.boot.core.exception.MifosValidationException.MifosValidationErrorCode.MIFOS_COMMONS_ERROR_VALIDATION;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.EXPECTATION_FAILED;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 
 import jakarta.validation.ConstraintViolationException;
@@ -71,7 +72,8 @@ public class MifosErrorHandlingControllerAdvice<T extends Throwable> {
 
     @ExceptionHandler(MifosBaseException.class)
     ResponseEntity<ProblemDetail> handleMifosException(MifosBaseException e, Locale locale) {
-        ProblemDetail problemDetails = ProblemDetail.forStatusAndDetail(BAD_REQUEST, e.getLocalizedMessage());
+        ProblemDetail problemDetails =
+                ProblemDetail.forStatusAndDetail(e.getError().getCategory().status(), e.getLocalizedMessage());
         problemDetails.setType(URI.create(properties.getErrorUrl() + "/" + e.getCode()));
         problemDetails.setTitle(e.getCode());
         problemDetails.setDetail(messageSource.getMessage(
@@ -159,7 +161,7 @@ public class MifosErrorHandlingControllerAdvice<T extends Throwable> {
     ResponseEntity<ProblemDetail> handleException(T e, Locale locale) {
         var error = MifosError.of(MIFOS_COMMONS_ERROR_UNKNOWN, e);
 
-        ProblemDetail problemDetails = ProblemDetail.forStatusAndDetail(BAD_REQUEST, e.getLocalizedMessage());
+        ProblemDetail problemDetails = ProblemDetail.forStatusAndDetail(INTERNAL_SERVER_ERROR, e.getLocalizedMessage());
         problemDetails.setType(URI.create(properties.getErrorUrl() + "/error"));
         problemDetails.setTitle(messageSource.getMessage(error.getCode().getKey(), null, locale));
 

@@ -5,6 +5,8 @@
 ///
 package org.mifos.commons.boot.core.model;
 
+import static org.mifos.commons.boot.core.model.MifosErrorCategory.BUSINESS_RULE;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
@@ -41,42 +43,87 @@ public class MifosError implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    private MifosErrorCategory category;
     private MifosErrorCode code;
     private String field;
     private String message;
     private List<Object> args;
     private Throwable cause;
 
-    public static MifosError of(MifosErrorCode code) {
-        return MifosError.builder().code(code).args(List.of()).build();
-    }
-
-    public static MifosError of(MifosErrorCode code, List<Object> args) {
-        return MifosError.builder().code(code).args(args).build();
-    }
-
-    public static MifosError of(MifosErrorCode code, Throwable cause) {
-        return MifosError.builder().code(code).cause(cause).build();
-    }
-
-    public static MifosError of(MifosErrorCode code, Throwable cause, List<Object> args) {
-        return MifosError.builder().code(code).cause(cause).args(args).build();
-    }
-
-    public static MifosError of(MifosErrorCode code, String field) {
-        return MifosError.builder().code(code).field(field).build();
-    }
-
-    public static MifosError of(MifosErrorCode code, String field, String message) {
-        return MifosError.builder().code(code).field(field).message(message).build();
-    }
-
-    public static MifosError of(MifosErrorCode code, String field, String message, Throwable cause) {
+    public static MifosError of(MifosErrorCategory category, MifosErrorCode code) {
         return MifosError.builder()
+                .category(category)
+                .code(code)
+                .args(List.of())
+                .build();
+    }
+
+    public static MifosError of(MifosErrorCategory category, MifosErrorCode code, List<Object> args) {
+        return MifosError.builder().category(category).code(code).args(args).build();
+    }
+
+    public static MifosError of(MifosErrorCategory category, MifosErrorCode code, Throwable cause) {
+        return MifosError.builder().category(category).code(code).cause(cause).build();
+    }
+
+    public static MifosError of(MifosErrorCategory category, MifosErrorCode code, Throwable cause, List<Object> args) {
+        return MifosError.builder()
+                .category(category)
+                .code(code)
+                .cause(cause)
+                .args(args)
+                .build();
+    }
+
+    public static MifosError of(MifosErrorCategory category, MifosErrorCode code, String field) {
+        return MifosError.builder().category(category).code(code).field(field).build();
+    }
+
+    public static MifosError of(MifosErrorCategory category, MifosErrorCode code, String field, String message) {
+        return MifosError.builder()
+                .category(category)
+                .code(code)
+                .field(field)
+                .message(message)
+                .build();
+    }
+
+    public static MifosError of(
+            MifosErrorCategory category, MifosErrorCode code, String field, String message, Throwable cause) {
+        return MifosError.builder()
+                .category(category)
                 .code(code)
                 .field(field)
                 .message(message)
                 .cause(cause)
                 .build();
+    }
+
+    public static MifosError of(MifosErrorCode code) {
+        return of(BUSINESS_RULE, code);
+    }
+
+    public static MifosError of(MifosErrorCode code, List<Object> args) {
+        return of(BUSINESS_RULE, code, args);
+    }
+
+    public static MifosError of(MifosErrorCode code, Throwable cause) {
+        return of(BUSINESS_RULE, code, cause);
+    }
+
+    public static MifosError of(MifosErrorCode code, Throwable cause, List<Object> args) {
+        return of(BUSINESS_RULE, code, cause, args);
+    }
+
+    public static MifosError of(MifosErrorCode code, String field) {
+        return of(BUSINESS_RULE, code, field);
+    }
+
+    public static MifosError of(MifosErrorCode code, String field, String message) {
+        return of(BUSINESS_RULE, code, field, message);
+    }
+
+    public static MifosError of(MifosErrorCode code, String field, String message, Throwable cause) {
+        return of(BUSINESS_RULE, code, field, message, cause);
     }
 }

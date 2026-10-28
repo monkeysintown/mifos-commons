@@ -108,10 +108,14 @@ public interface MifosFlow<C extends MifosFlow.MifosFlowContext> {
         }
 
         /// Executes `usecase` with a request derived from the context and merges the response into the context.
-        static <C extends MifosFlowContext, REQ extends MifosUsecase.MifosRequest, RES extends MifosUsecase.MifosResponse> MifosFlow<C> step(
-                Function<? super C, ? extends REQ> request,
-                MifosUsecase<REQ, RES> usecase,
-                BiFunction<? super C, ? super RES, ? extends C> merge) {
+        static <
+                        C extends MifosFlowContext,
+                        REQ extends MifosUsecase.MifosRequest,
+                        RES extends MifosUsecase.MifosResponse>
+                MifosFlow<C> step(
+                        Function<? super C, ? extends REQ> request,
+                        MifosUsecase<REQ, RES> usecase,
+                        BiFunction<? super C, ? super RES, ? extends C> merge) {
             return ctx -> merge.apply(ctx, usecase.execute(request.apply(ctx)));
         }
 
