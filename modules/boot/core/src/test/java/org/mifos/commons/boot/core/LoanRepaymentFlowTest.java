@@ -32,7 +32,7 @@ import org.mifos.commons.boot.core.sample.model.LoanAccount;
 import org.mifos.commons.boot.core.sample.model.LoanRepaymentContext;
 import org.mifos.commons.boot.core.sample.model.LoanStatus;
 
-class LoanRepaymentFlowTest {
+final class LoanRepaymentFlowTest {
     static final LocalDate BUSINESS_DATE = LocalDate.parse("2025-01-31");
     static final String USD = "USD";
     static final CurrencyUnit USD_CURRENCY =

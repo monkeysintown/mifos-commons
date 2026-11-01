@@ -38,12 +38,12 @@ public class LoanRepaymentContext implements MifosFlow.MifosFlowContext {
                 Money.zero(CurrencyUnitBuilder.of(loan.currency(), "default").build());
     }
 
-    /** Snapshot for a fork: fresh result slots, shared immutable input. */
+    /// Snapshot for a fork: fresh result slots, shared immutable input.
     public LoanRepaymentContext copy() {
         return new LoanRepaymentContext(loan, payment, businessDate);
     }
 
-    /** Merge a fork result back in — forks write disjoint fields (last write wins). */
+    /// Merge a fork result back in — forks write disjoint fields (last write wins).
     public LoanRepaymentContext mergeWith(LoanRepaymentContext forkResult) {
         if (forkResult.arrears != null) this.arrears = forkResult.arrears;
         if (forkResult.outstanding != null) this.outstanding = forkResult.outstanding;

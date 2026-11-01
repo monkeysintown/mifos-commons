@@ -41,10 +41,14 @@ public interface MifosFlow<C extends MifosFlow.MifosFlowContext> {
     /// usecase and folds the response back into a new context. This keeps usecases unaware of the flows that use
     /// them and keeps flows free of business rules: they only describe *order*, *conditions* and *boundaries*.
     interface Dsl {
+        Predicate<? super RuntimeException> RETRY_ON_ALL = e -> true;
+
         @SafeVarargs
         static <C extends MifosFlowContext> MifosFlow<C> sequence(MifosFlow<C>... steps) {
             return ctx -> {
-                for (MifosFlow<C> step : steps) ctx = step.run(ctx);
+                for (MifosFlow<C> step : steps) {
+                    ctx = step.run(ctx);
+                }
                 return ctx;
             };
         }
@@ -62,7 +66,9 @@ public interface MifosFlow<C extends MifosFlow.MifosFlowContext> {
         // --- iteration ---
         static <C extends MifosFlowContext> MifosFlow<C> repeatWhile(Predicate<C> cond, MifosFlow<C> body) {
             return ctx -> {
-                while (cond.test(ctx)) ctx = body.run(ctx);
+                while (cond.test(ctx)) {
+                    ctx = body.run(ctx);
+                }
                 return ctx;
             };
         }
@@ -70,7 +76,9 @@ public interface MifosFlow<C extends MifosFlow.MifosFlowContext> {
         static <C extends MifosFlowContext, I> MifosFlow<C> forEach(
                 Function<C, ? extends Collection<I>> items, BiConsumer<I, C> body) {
             return ctx -> {
-                for (I item : items.apply(ctx)) body.accept(item, ctx);
+                for (I item : items.apply(ctx)) {
+                    body.accept(item, ctx);
+                }
                 return ctx;
             };
         }
@@ -79,11 +87,15 @@ public interface MifosFlow<C extends MifosFlow.MifosFlowContext> {
         static <C extends MifosFlowContext> MifosFlow<C> forkJoin(
                 Function<C, C> snapshot, List<MifosFlow<C>> forks, BinaryOperator<C> merge, Executor executor) {
             return ctx -> {
-                List<CompletableFuture<C>> results = forks.stream()
+                var results = forks.stream()
                         .map(fork -> CompletableFuture.supplyAsync(() -> fork.run(snapshot.apply(ctx)), executor))
                         .toList();
-                C merged = ctx;
-                for (CompletableFuture<C> r : results) merged = merge.apply(merged, r.join());
+                var merged = ctx;
+
+                for (CompletableFuture<C> r : results) {
+                    merged = merge.apply(merged, r.join());
+                }
+
                 return merged;
             };
         }
@@ -91,20 +103,6 @@ public interface MifosFlow<C extends MifosFlow.MifosFlowContext> {
         // --- helpers / decorator example ---
         static <C extends MifosFlowContext> MifosFlow<C> noop() {
             return ctx -> ctx;
-        }
-
-        static <C extends MifosFlowContext> MifosFlow<C> retry(int attempts, MifosFlow<C> flow) {
-            return ctx -> {
-                RuntimeException last = null;
-                for (int i = 1; i <= attempts; i++) {
-                    try {
-                        return flow.run(ctx);
-                    } catch (RuntimeException e) {
-                        last = e;
-                    }
-                }
-                throw last;
-            };
         }
 
         /// Executes `usecase` with a request derived from the context and merges the response into the context.
@@ -139,6 +137,10 @@ public interface MifosFlow<C extends MifosFlow.MifosFlowContext> {
         /// Runs the flow inside a unit-of-work boundary (e.g. a transaction).
         static <C extends MifosFlowContext> MifosFlow<C> within(MifosFlow.Boundary boundary, MifosFlow<C> flow) {
             return ctx -> boundary.run(() -> flow.run(ctx));
+        }
+
+        static <C extends MifosFlowContext> MifosFlow<C> retry(int attempts, MifosFlow<C> flow) {
+            return retryOn(attempts, RETRY_ON_ALL, flow);
         }
 
         /// Retries the flow on failures matching `retryable` (e.g. optimistic concurrency conflicts).
