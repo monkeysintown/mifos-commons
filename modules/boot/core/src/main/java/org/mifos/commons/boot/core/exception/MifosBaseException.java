@@ -32,7 +32,7 @@ public abstract class MifosBaseException extends RuntimeException {
     protected final MifosError error;
 
     protected MifosBaseException(MifosError error) {
-        super(error.getCause());
+        super(error.getCode().getKey(), error.getCause());
         this.error = error;
     }
 

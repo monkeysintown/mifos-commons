@@ -41,6 +41,12 @@ mifos {
     }
 }
 
+include(":mifos-commons-operation-usecase-core")
+project(":mifos-commons-operation-usecase-core").projectDir = file("${rootDir}/modules/operation/usecase/core")
+include(":mifos-commons-operation-flow-core")
+project(":mifos-commons-operation-flow-core").projectDir = file("${rootDir}/modules/operation/flow/core")
+include(":mifos-commons-operation-flow-starter")
+project(":mifos-commons-operation-flow-starter").projectDir = file("${rootDir}/modules/operation/flow/starter")
 include(":mifos-commons-boot-core")
 project(":mifos-commons-boot-core").projectDir = file("${rootDir}/modules/boot/core")
 include(":mifos-commons-boot-persistence-relational-core")

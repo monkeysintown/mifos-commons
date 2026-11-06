@@ -40,7 +40,7 @@ final class MifosCliPicoRunnner implements MifosCliRunner {
             } else {
                 exitCode = commandLine.execute(args);
             }
-        } catch (Exception e) {
+        } catch (Exception _) {
             exitCode = -1;
         }
     }

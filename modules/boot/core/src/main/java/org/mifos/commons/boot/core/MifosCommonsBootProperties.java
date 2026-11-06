@@ -7,11 +7,10 @@ package org.mifos.commons.boot.core;
 
 import static org.mifos.commons.boot.core.MifosCommonsBootConstants.MIFOS_COMMONS_BOOT_PROPERTIES_PREFIX;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.time.Duration;
+import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 /// Configuration properties for Mifos common functionality.
 ///
@@ -37,20 +36,47 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 ///
 /// @author <a href="https://github.com/vidakovic" target="_blank">Aleksandar Vidakovic</a>
 /// @since 1.0.0
-@Builder
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @ConfigurationProperties(prefix = MIFOS_COMMONS_BOOT_PROPERTIES_PREFIX)
-public class MifosCommonsBootProperties {
-    @Builder.Default
-    private String errorUrl = "https://doc.mifos.org/projects/common/errors";
+public record MifosCommonsBootProperties(
+        @DefaultValue("https://doc.mifos.org/projects/common/errors")
+        String errorUrl,
 
-    private String tui;
-
+        String tui) {
     public enum MifosCommonsBootTuiType {
         PICO,
         SHELL,
         TAMBOUI
     }
+
+    public enum MifosCommonsBootFlowPropagation {
+        REQUIRED,
+        REQUIRES_NEW,
+        MANDATORY,
+        SUPPORTS,
+        NOT_SUPPORTED,
+        NEVER,
+        NESTED
+    }
+
+    /// @param transactionManager bean name of the transaction manager; empty for the primary one
+    public record MifosCommonsBootFlowBoundaryProperties(
+            @DefaultValue("required") MifosCommonsBootFlowPropagation propagation,
+            @DefaultValue("false") boolean readOnly,
+            Duration timeout,
+            String transactionManager) {}
+
+    /// @param retryOn fully qualified exception class names; empty means
+    ///     `org.springframework.dao.ConcurrencyFailureException` (optimistic and pessimistic locking conflicts)
+    public record MifosCommonsBootFlowRetryProperties(
+            @DefaultValue("3") int maxAttempts,
+            @DefaultValue("50ms") Duration initialBackoff,
+            @DefaultValue("2.0") double multiplier,
+            @DefaultValue("1s") Duration maxBackoff,
+            @DefaultValue("0.5") double jitter,
+            @DefaultValue List<String> retryOn) {}
+
+    /// @param concurrencyLimit maximum number of concurrently running forks; -1 for unlimited
+    public record MifosCommonsBootFlowExecutorProperties(
+            @DefaultValue("true") boolean virtualThreads,
+            @DefaultValue("-1") int concurrencyLimit) {}
 }

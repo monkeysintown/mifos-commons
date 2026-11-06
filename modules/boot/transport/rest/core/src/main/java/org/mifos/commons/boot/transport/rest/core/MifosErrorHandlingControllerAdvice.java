@@ -74,7 +74,7 @@ public class MifosErrorHandlingControllerAdvice<T extends Throwable> {
     ResponseEntity<ProblemDetail> handleMifosException(MifosBaseException e, Locale locale) {
         ProblemDetail problemDetails =
                 ProblemDetail.forStatusAndDetail(e.getError().getCategory().status(), e.getLocalizedMessage());
-        problemDetails.setType(URI.create(properties.getErrorUrl() + "/" + e.getCode()));
+        problemDetails.setType(URI.create(properties.errorUrl() + "/" + e.getCode()));
         problemDetails.setTitle(e.getCode());
         problemDetails.setDetail(messageSource.getMessage(
                 e.getError().getCode().getKey(), e.getError().getArgs().toArray(), locale));
@@ -91,7 +91,7 @@ public class MifosErrorHandlingControllerAdvice<T extends Throwable> {
                 .toList();
 
         ProblemDetail problemDetails = ProblemDetail.forStatusAndDetail(BAD_REQUEST, e.getLocalizedMessage());
-        problemDetails.setType(URI.create(properties.getErrorUrl() + "/validation"));
+        problemDetails.setType(URI.create(properties.errorUrl() + "/validation"));
         problemDetails.setTitle(errors.stream()
                 .findFirst()
                 .map(mifosError -> getCode(mifosError.getCode().getValue()))
@@ -111,7 +111,7 @@ public class MifosErrorHandlingControllerAdvice<T extends Throwable> {
                 .toList();
 
         ProblemDetail problemDetails = ProblemDetail.forStatusAndDetail(BAD_REQUEST, e.getLocalizedMessage());
-        problemDetails.setType(URI.create(properties.getErrorUrl() + "/validation"));
+        problemDetails.setType(URI.create(properties.errorUrl() + "/validation"));
         problemDetails.setTitle(errors.stream()
                 .findFirst()
                 .map(mifosError -> getCode(mifosError.getCode().getValue()))
@@ -129,7 +129,7 @@ public class MifosErrorHandlingControllerAdvice<T extends Throwable> {
                 .toList();
 
         ProblemDetail problemDetails = ProblemDetail.forStatusAndDetail(BAD_REQUEST, e.getLocalizedMessage());
-        problemDetails.setType(URI.create(properties.getErrorUrl() + "/validation"));
+        problemDetails.setType(URI.create(properties.errorUrl() + "/validation"));
         problemDetails.setTitle(errors.stream()
                 .findFirst()
                 .map(mifosError -> getCode(mifosError.getCode().getValue()))
@@ -147,7 +147,7 @@ public class MifosErrorHandlingControllerAdvice<T extends Throwable> {
                 .toList();
 
         ProblemDetail problemDetails = ProblemDetail.forStatusAndDetail(BAD_REQUEST, e.getLocalizedMessage());
-        problemDetails.setType(URI.create(properties.getErrorUrl() + "/validation"));
+        problemDetails.setType(URI.create(properties.errorUrl() + "/validation"));
         problemDetails.setTitle(errors.stream()
                 .findFirst()
                 .map(mifosError -> getCode(mifosError.getCode().getValue()))
@@ -162,7 +162,7 @@ public class MifosErrorHandlingControllerAdvice<T extends Throwable> {
         var error = MifosError.of(MIFOS_COMMONS_ERROR_UNKNOWN, e);
 
         ProblemDetail problemDetails = ProblemDetail.forStatusAndDetail(INTERNAL_SERVER_ERROR, e.getLocalizedMessage());
-        problemDetails.setType(URI.create(properties.getErrorUrl() + "/error"));
+        problemDetails.setType(URI.create(properties.errorUrl() + "/error"));
         problemDetails.setTitle(messageSource.getMessage(error.getCode().getKey(), null, locale));
 
         return ResponseEntity.badRequest().contentType(APPLICATION_PROBLEM_JSON).body(problemDetails);
