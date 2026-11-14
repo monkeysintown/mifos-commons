@@ -1,0 +1,15 @@
+plugins {
+    id "org.mifos.conventions.gradle.base.java"
+}
+
+description = "Mifos Initiative - Commons - Operation - Renderer - KUML"
+
+
+dependencies {
+    api project(":mifos-commons-boot-operation-core")
+    implementation "dev.kuml:kuml-core-script"
+    implementation "dev.kuml:kuml-core-config"
+    implementation "dev.kuml:kuml-layout-elk"
+    implementation "dev.kuml:kuml-io-svg"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine"
+}

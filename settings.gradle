@@ -41,8 +41,6 @@ mifos {
     }
 }
 
-include(":mifos-commons-boot-operation-core")
-project(":mifos-commons-boot-operation-core").projectDir = file("${rootDir}/modules/boot/operation/core")
 include(":mifos-commons-boot-core")
 project(":mifos-commons-boot-core").projectDir = file("${rootDir}/modules/boot/core")
 include(":mifos-commons-boot-persistence-relational-core")
@@ -53,6 +51,12 @@ include(":mifos-commons-boot-persistence-relational-reactive")
 project(":mifos-commons-boot-persistence-relational-reactive").projectDir = file("${rootDir}/modules/boot/persistence/relational/reactive")
 include(":mifos-commons-boot-mapping")
 project(":mifos-commons-boot-mapping").projectDir = file("${rootDir}/modules/boot/mapping")
+include(":mifos-commons-boot-operation-core")
+project(":mifos-commons-boot-operation-core").projectDir = file("${rootDir}/modules/boot/operation/core")
+include(":mifos-commons-boot-operation-renderer-plantuml")
+project(":mifos-commons-boot-operation-renderer-plantuml").projectDir = file("${rootDir}/modules/boot/operation/renderer/plantuml")
+include(":mifos-commons-boot-operation-renderer-kuml")
+project(":mifos-commons-boot-operation-renderer-kuml").projectDir = file("${rootDir}/modules/boot/operation/renderer/kuml")
 include(":mifos-commons-boot-transport-rest-core")
 project(":mifos-commons-boot-transport-rest-core").projectDir = file("${rootDir}/modules/boot/transport/rest/core")
 include(":mifos-commons-boot-transport-rest-imperative")
