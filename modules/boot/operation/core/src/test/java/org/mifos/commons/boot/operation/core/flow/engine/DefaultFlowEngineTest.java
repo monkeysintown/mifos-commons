@@ -465,7 +465,8 @@ final class DefaultFlowEngineTest {
                 }
                 return ctx.mark("ok");
             });
-            MifosFlow<Ctx> flow = bind(flaky.retryOn(RetryPolicy.on(3, ConflictException.class::isInstance)));
+            var flow = bind(flaky.retryOn(RetryPolicy.on(3, ConflictException.class::isInstance)));
+
             assertEquals("ok", flow.run(Ctx.of(0)).trail());
             assertEquals(3, attempts.get());
         }
@@ -572,6 +573,7 @@ final class DefaultFlowEngineTest {
                 return ctx;
             });
             var policy = RetryPolicy.on(3, e -> true).withBackoff(Duration.ofMillis(100), 2.0, Duration.ofSeconds(1));
+
             engine().sleeper(slept::add)
                     .interceptor(recorder)
                     .build()
@@ -634,6 +636,7 @@ final class DefaultFlowEngineTest {
         void recoverTurnsMatchingFailureIntoContext() {
             var flow = fail(BusinessException::new)
                     .recover(BusinessException.class::isInstance, (c, e) -> c.mark("rejected"));
+
             assertEquals("rejected", bind(flow).run(Ctx.of(0)).trail());
         }
 
@@ -669,7 +672,7 @@ final class DefaultFlowEngineTest {
 
         @Test
         void sagaReturnsFinalContextOnSuccess() {
-            Definition<Ctx> flowDefinition = saga(compensable(mark("a"), noop()), compensable(mark("b"), noop()));
+            var flowDefinition = saga(compensable(mark("a"), noop()), compensable(mark("b"), noop()));
 
             assertEquals("ab", bind(flowDefinition).run(Ctx.of(0)).trail());
         }
@@ -751,11 +754,10 @@ final class DefaultFlowEngineTest {
                     return inner.intercept(node, ctx, next);
                 }
             };
-            Definition<Ctx> flowDefinitiion = sequence(
+            var flowDefinitiion = sequence(
                             step(c -> new Amount(c.value()), new DoubleAmount(), (c, r) -> c),
                             fail(BusinessException::new).named("second"))
                     .named("transfer");
-
             var flow = engine().interceptor(sharedOuter)
                     .interceptor(sharedInner)
                     .build()
@@ -796,6 +798,7 @@ final class DefaultFlowEngineTest {
                     .within(BoundaryRef.REQUIRED)
                     .retryOn(RetryPolicy.on(2, e -> true))
                     .named("transfer");
+
             engine().interceptor(capture).build().bind(definition).run(Ctx.of(1));
 
             assertEquals(

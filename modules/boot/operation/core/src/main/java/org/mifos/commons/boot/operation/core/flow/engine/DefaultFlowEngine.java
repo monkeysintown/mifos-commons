@@ -275,7 +275,7 @@ public final class DefaultFlowEngine implements MifosFlow.Engine {
 
                     Duration delay = policy.delayAfter(attempt, ThreadLocalRandom.current());
 
-                    for (MifosFlow.Interceptor interceptor : interceptors) {
+                    for (var interceptor : interceptors) {
                         interceptor.onRetry(node, attempt, e, delay);
                     }
 
@@ -412,7 +412,7 @@ public final class DefaultFlowEngine implements MifosFlow.Engine {
     private <C extends MifosFlowContext> MifosFlow<C> intercepted(MifosFlow.Node node, MifosFlow<C> flow) {
         var result = flow;
 
-        for (var interceptor : interceptors) {
+        for (var interceptor : interceptors.reversed()) {
             final var next = result;
             result = ctx -> interceptor.intercept(node, ctx, next);
         }
