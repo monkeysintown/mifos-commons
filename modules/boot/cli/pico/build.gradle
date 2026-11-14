@@ -5,8 +5,7 @@ plugins {
 description = "Mifos Initiative - Commons - Boot - CLI - Pico"
 
 dependencies {
-    implementation project(":mifos-commons-boot-core")
-    api "org.springframework.boot:spring-boot-starter"
+    implementation project(":mifos-commons-boot-cli-core")
     api "info.picocli:picocli-spring-boot-starter"
     api "info.picocli:picocli-shell-jline3"
     api "org.jline:jline"

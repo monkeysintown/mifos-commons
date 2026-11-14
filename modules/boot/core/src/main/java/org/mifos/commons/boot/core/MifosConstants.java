@@ -7,7 +7,7 @@ package org.mifos.commons.boot.core;
 
 import lombok.experimental.UtilityClass;
 
-/// Utility class holding constant values used throughout the Mifos messaging system.
+/// Utility class holding constant values used throughout the Mifos Platform Stack.
 ///
 /// This class defines base paths, prefixes, and specific message keys for resolving internationalized messages and
 /// error codes within the Mifos application.

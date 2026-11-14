@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jline.reader.LineReader;
 import org.jline.utils.AttributedStringBuilder;
 import org.jspecify.annotations.NonNull;
-import org.mifos.commons.boot.core.cli.MifosCliRunner;
+import org.mifos.commons.boot.cli.core.MifosCliRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;

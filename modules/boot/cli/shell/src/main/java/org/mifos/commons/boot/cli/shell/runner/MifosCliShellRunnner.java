@@ -8,7 +8,7 @@ package org.mifos.commons.boot.cli.shell.runner;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.mifos.commons.boot.core.cli.MifosCliRunner;
+import org.mifos.commons.boot.cli.core.MifosCliRunner;
 import org.springframework.shell.core.ShellRunner;
 import org.springframework.stereotype.Component;
 

@@ -5,8 +5,7 @@ plugins {
 description = "Mifos Initiative - Commons - Boot - CLI - Tamboui"
 
 dependencies {
-    implementation project(":mifos-commons-boot-core")
-    api "org.springframework.boot:spring-boot-starter"
+    implementation project(":mifos-commons-boot-cli-core")
 
     annotationProcessor "dev.tamboui:tamboui-processor"
     implementation "dev.tamboui:tamboui-toolkit"

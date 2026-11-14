@@ -7,7 +7,7 @@ package org.mifos.commons.boot.cli.tamboui.runner;
 
 import dev.tamboui.toolkit.app.ToolkitApp;
 import lombok.RequiredArgsConstructor;
-import org.mifos.commons.boot.core.cli.MifosCliRunner;
+import org.mifos.commons.boot.cli.core.MifosCliRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
 
