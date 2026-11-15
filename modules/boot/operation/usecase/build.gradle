@@ -1,0 +1,12 @@
+plugins {
+    id "org.mifos.conventions.gradle.base.java"
+}
+
+description = "Mifos Initiative - Commons - Operation - Usecase"
+
+dependencies {
+    api project(":mifos-commons-boot-core")
+    compileOnly "org.springframework.boot:spring-boot-starter"
+    implementation "org.springframework:spring-aop"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine"
+}

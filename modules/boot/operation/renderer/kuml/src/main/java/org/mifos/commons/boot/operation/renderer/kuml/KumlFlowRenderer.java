@@ -21,8 +21,8 @@ import dev.kuml.layout.elk.ElkLayoutEngine;
 import dev.kuml.renderer.theme.core.PlainThemeKt;
 import java.util.Map;
 import kotlin.Unit;
-import org.mifos.commons.boot.operation.core.flow.MifosFlow;
-import org.mifos.commons.boot.operation.core.flow.spi.Renderer;
+import org.mifos.commons.boot.operation.flow.MifosFlow;
+import org.mifos.commons.boot.operation.flow.spi.Renderer;
 
 public final class KumlFlowRenderer implements Renderer {
     @Override

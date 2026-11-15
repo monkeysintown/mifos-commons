@@ -6,8 +6,8 @@
 package org.mifos.commons.boot.operation.renderer.plantuml;
 
 import java.util.List;
-import org.mifos.commons.boot.operation.core.flow.MifosFlow;
-import org.mifos.commons.boot.operation.core.flow.spi.Renderer;
+import org.mifos.commons.boot.operation.flow.MifosFlow;
+import org.mifos.commons.boot.operation.flow.spi.Renderer;
 
 /// Renders a [MifosFlow.Definition] as a PlantUML activity diagram (the
 /// "new" activity syntax).
@@ -202,7 +202,8 @@ public final class PlantUmlFlowRenderer implements Renderer {
         /// Text for an action: multi-line text uses PlantUML's `\n`; a trailing `;` or shape character would end the
         /// action early, so it is followed by a zero-width space.
         private String text(String label) {
-            String s = label.replace("\r", "").replace("\n", "\\n");
+            var s = label.replace("\r", "").replace("\n", "\\n");
+
             if (s.endsWith(";")
                     || s.endsWith(">")
                     || s.endsWith("|")
@@ -213,6 +214,7 @@ public final class PlantUmlFlowRenderer implements Renderer {
                     || s.endsWith("\\")) {
                 s = s + "\u200B";
             }
+
             return s;
         }
 

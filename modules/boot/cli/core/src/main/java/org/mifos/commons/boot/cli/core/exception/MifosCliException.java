@@ -1,0 +1,45 @@
+///
+/// This Source Code Form is subject to the terms of the Mozilla Public
+/// License, v. 2.0. If a copy of the MPL was not distributed with this
+/// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+///
+package org.mifos.commons.boot.cli.core.exception;
+
+import static org.mifos.commons.boot.core.MifosCommonsBootConstants.MIFOS_COMMONS_BOOT_ERROR_CODE_CLI_INCREMENT;
+import static org.mifos.commons.boot.core.MifosCommonsBootConstants.MIFOS_COMMONS_BOOT_ERROR_CODE_CLI_START;
+import static org.mifos.commons.boot.core.MifosCommonsBootConstants.MIFOS_COMMONS_BOOT_MESSAGE_ERROR_CLI_PREFIX;
+
+import java.io.Serial;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.mifos.commons.boot.core.exception.MifosBaseException;
+import org.mifos.commons.boot.core.model.MifosError;
+import org.mifos.commons.boot.core.model.MifosErrorCode;
+
+public class MifosCliException extends MifosBaseException {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    public MifosCliException(MifosError error) {
+        super(error);
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    public enum MifosCliErrorCode implements MifosErrorCode {
+        MIFOS_COMMONS_ERROR_CLI_UNKNOWN(
+                MIFOS_COMMONS_BOOT_ERROR_CODE_CLI_START, MIFOS_COMMONS_BOOT_MESSAGE_ERROR_CLI_PREFIX + ".unknown"),
+        MIFOS_COMMONS_ERROR_CLI_GENERIC(
+                MIFOS_COMMONS_BOOT_ERROR_CODE_CLI_START + 2 * MIFOS_COMMONS_BOOT_ERROR_CODE_CLI_INCREMENT,
+                MIFOS_COMMONS_BOOT_MESSAGE_ERROR_CLI_PREFIX + ".generic"),
+        ;
+
+        private final int value;
+        private final String key;
+
+        @Override
+        public String getName() {
+            return name();
+        }
+    }
+}
