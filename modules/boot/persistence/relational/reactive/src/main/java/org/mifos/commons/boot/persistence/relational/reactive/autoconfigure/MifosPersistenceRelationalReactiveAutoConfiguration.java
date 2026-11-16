@@ -25,7 +25,8 @@ import org.springframework.data.r2dbc.config.EnableR2dbcAuditing;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-/// TBD
+/// Auto-configuration of reactive relational persistence: Spring Data R2DBC repositories with QueryDSL support,
+/// R2DBC auditing, transaction management and the QueryDSL SQL configuration (PostGIS templates).
 @Slf4j
 @RequiredArgsConstructor
 @Configuration

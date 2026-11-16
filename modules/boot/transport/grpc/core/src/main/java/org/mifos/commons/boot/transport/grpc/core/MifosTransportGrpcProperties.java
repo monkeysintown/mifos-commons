@@ -25,14 +25,18 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @AllArgsConstructor
 @ConfigurationProperties(prefix = MIFOS_COMMONS_BOOT_TRANSPORT_GRPC_PROPERTIES_PREFIX)
 public class MifosTransportGrpcProperties {
+    /// Base URL of the error documentation.
     @Builder.Default
     private String errorUrl = "https://doc.mifos.org/projects/common/errors";
 
+    /// Names of the request headers to propagate.
     private Set<String> headers;
 
+    /// Default page number used when a request does not specify one.
     @Builder.Default
     private int defaultPageNumber = 0;
 
+    /// Default page size used when a request does not specify one.
     @Builder.Default
     private int defaultPageSize = 100;
 }

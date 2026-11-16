@@ -5,4 +5,5 @@
 ///
 package org.mifos.commons.boot.cli.pico.command;
 
+/// Root command of the picocli based Mifos CLI; registered with the picocli `CommandLine`.
 public interface MifosCliPicoCommand extends Runnable {}

@@ -24,6 +24,10 @@ import kotlin.Unit;
 import org.mifos.commons.boot.operation.flow.MifosFlow;
 import org.mifos.commons.boot.operation.flow.spi.Renderer;
 
+/// Renders a [MifosFlow.Definition] as a BPMN process diagram in SVG format using kUML (laid out with ELK).
+///
+/// Work in progress: the current implementation ignores `title` and `definition` and always renders a fixed sample
+/// "Order Process" diagram.
 public final class KumlFlowRenderer implements Renderer {
     @Override
     public String render(String title, MifosFlow.Definition<?> definition) {

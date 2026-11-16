@@ -8,8 +8,14 @@ package org.mifos.commons.boot.persistence.relational.reactive;
 import org.springframework.data.repository.NoRepositoryBean;
 import reactor.core.publisher.Flux;
 
+/// Reactive repository for entities identified by a `UUID`.
+///
+/// @param <T> the entity type
 @NoRepositoryBean
 public interface MifosPersistenceRelationalReactiveRepository<T> {
+    /// Returns all entities.
+    ///
+    /// @return all entities
     Flux<T> findAll();
 
     // TODO: finish this!

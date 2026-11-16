@@ -7,10 +7,13 @@ package org.mifos.commons.boot.operation.flow.autoconfigure;
 
 import org.mifos.commons.boot.operation.flow.engine.DefaultFlowEngine;
 
-/// Customizes the [MifosFlow.Engine] built by
+/// Customizes the [MifosFlow.Engine][org.mifos.commons.boot.operation.flow.MifosFlow.Engine] built by
 /// [MifosFlowAutoConfiguration], e.g. to register additional boundaries, executors, retry policies or
 /// interceptors. Applied in `@Order` order after all defaults.
 @FunctionalInterface
 public interface EngineCustomizer {
+    /// Customizes the engine builder.
+    ///
+    /// @param builder the builder, already configured with the default resolvers and interceptors
     void customize(DefaultFlowEngine.Builder builder);
 }

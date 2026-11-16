@@ -17,10 +17,10 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 /// A small, self-contained FIGlet renderer that turns a line of text into ASCII-art using a FIGlet
-/// [.flf] font.
+/// `.flf` font.
 ///
-/// This is a clean-room implementation written against the public <em>FIGfont Version 2 FIGfont and
-/// FIGdriver Standard</em> (the `.flf` format specification). It exists to give this extension a
+/// This is a clean-room implementation written against the public _FIGfont Version 2 FIGfont and
+/// FIGdriver Standard_ (the `.flf` format specification). It exists to give this library a
 /// permissively-licensed banner renderer, and only implements the subset needed here: parsing a font and
 /// rendering a single line of text with horizontal fitting/smushing. Vertical smushing, right-to-left
 /// layout and code-tagged characters beyond the required set are intentionally not implemented.
@@ -58,12 +58,20 @@ final class Figlet {
 
     /// Renders `text` and also reports, for every output cell, which input character's ink occupies it. Used to
     /// colour the banner per cell so colours follow each character's actual ink.
+    ///
+    /// @param fontStream the `.flf` font resource (not closed by this method)
+    /// @param text the text to render
+    /// @return the rendered banner together with the per-cell ink ownership
+    /// @throws IOException if the stream cannot be read or is not a valid `.flf` font
     static RenderResult renderTracked(InputStream fontStream, String text) throws IOException {
         return parse(fontStream).renderTracked(text);
     }
 
     /// A rendered banner together with per-cell ink ownership: `owner[row][col]` is the index of the input
     /// character whose ink occupies that cell, or `-1` for a blank cell.
+    ///
+    /// @param banner the rendered banner rows, each terminated by `'\n'`
+    /// @param owner per-cell index of the owning input character, or `-1` for a blank cell
     record RenderResult(String banner, int[][] owner) {}
 
     /// Parses a `.flf` font stream and returns a [Figlet] object that represents the font.

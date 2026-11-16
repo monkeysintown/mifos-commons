@@ -13,11 +13,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/// Configuration properties of the relational persistence modules (prefix `mifos.commons.persistence.relational`).
 @Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @ConfigurationProperties(prefix = MIFOS_COMMONS_BOOT_PERSISTENCE_RELATIONAL_PROPERTIES_PREFIX)
 public class MifosPersistenceProperties {
+    /// Whether relational persistence is enabled.
     private boolean enabled;
 }

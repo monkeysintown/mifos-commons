@@ -21,15 +21,15 @@ import org.mifos.commons.boot.operation.flow.spi.Renderer;
 /// | `tap`                            | send-signal shaped action                                           |
 /// | `named` around a single action   | that action, labelled with the name                                 |
 /// | `named` around anything else     | partition                                                           |
-/// | `when`                           | `if` / `else`, labelled with the `when(label, ...)` label           |
-/// | `repeatWhile`, `forEach`         | `while` loop                                                        |
+/// | `when`                           | `if` / `else` with a generic `when` condition label                 |
+/// | `repeatWhile`, `forEach`         | `while` loop; a `forEach` with an empty body is a single action     |
 /// | `forkJoin`                       | `fork` / `fork again` / `end fork`                                  |
 /// | `within`                         | coloured partition naming the boundary                              |
 /// | `retryOn`                        | `repeat` loop that repeats on a retryable failure                   |
 /// | `recover`, `saga`, `subflow`     | coloured partition; saga steps carry a note naming their undo step  |
 ///
-/// Conditions, loop items and anonymous `act` steps are lambdas, so they can only be described by a label or a
-/// name; give them one where the diagram is meant for readers.
+/// Conditions, loop items and anonymous `act` steps are lambdas, so the diagram cannot describe them; wrap them in
+/// `named` where the diagram is meant for readers.
 public final class PlantUmlFlowRenderer implements Renderer {
     // TODO: make this configurable
     static final String BOUNDARY_COLOR = "#E3F2FD";

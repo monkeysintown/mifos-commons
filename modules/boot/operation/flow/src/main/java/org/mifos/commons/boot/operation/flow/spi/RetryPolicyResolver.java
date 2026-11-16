@@ -11,5 +11,9 @@ import org.mifos.commons.boot.operation.flow.MifosFlow;
 /// Resolves retry policies referenced by name, e.g. from configuration properties.
 @FunctionalInterface
 public interface RetryPolicyResolver {
+    /// Resolves a retry policy.
+    ///
+    /// @param name the policy name
+    /// @return the policy, or empty if there is none with that name
     Optional<MifosFlow.RetryPolicy> resolve(String name);
 }

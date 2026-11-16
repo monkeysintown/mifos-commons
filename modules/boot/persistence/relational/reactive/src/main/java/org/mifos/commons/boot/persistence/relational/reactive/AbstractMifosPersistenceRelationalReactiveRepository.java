@@ -11,9 +11,14 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 
+/// Base implementation of [MifosPersistenceRelationalReactiveRepository] delegating to a Spring Data R2DBC
+/// QueryDSL repository.
+///
+/// @param <T> the entity type
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class AbstractMifosPersistenceRelationalReactiveRepository<T>
         implements MifosPersistenceRelationalReactiveRepository<T> {
+    /// The QueryDSL repository all operations are delegated to.
     protected final QuerydslR2dbcRepository<T, UUID> repository;
 
     @Override

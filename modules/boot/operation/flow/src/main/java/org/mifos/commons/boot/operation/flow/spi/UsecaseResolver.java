@@ -9,5 +9,10 @@ import java.util.Optional;
 
 /// Resolves usecases referenced by type; in Spring, the unique bean of that type.
 public interface UsecaseResolver {
+    /// Resolves a usecase.
+    ///
+    /// @param <U> the usecase type
+    /// @param type the usecase type
+    /// @return the usecase, or empty if there is no unique one of that type
     <U> Optional<U> resolve(Class<U> type);
 }

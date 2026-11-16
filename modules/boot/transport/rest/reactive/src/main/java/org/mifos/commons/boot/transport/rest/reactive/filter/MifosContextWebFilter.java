@@ -19,16 +19,16 @@ import reactor.core.publisher.Mono;
 /// [reactor.util.context.Context] for downstream components.
 ///
 /// This filter is designed for use in a Spring WebFlux application. It reads the incoming
-/// [org.springframework.web.server.ServerWebExchange], extracts headers whose names are configured in
-/// [MifosTransportRestProperties#getHeaders()], and stores their first value into the Reactor `MifosFlowContext`
-/// under a lower‑cased key. This allows services (e.g., reactive REST clients) to access those headers without
-/// explicitly passing them through method calls.
+/// [org.springframework.web.server.ServerWebExchange], extracts headers whose lower-cased names are configured in
+/// the `headers` property of [MifosTransportRestProperties], and stores their first value into the Reactor context
+/// under the lower-cased header name. This allows services (e.g., reactive REST clients) to access those headers
+/// without explicitly passing them through method calls.
 ///
 /// The filter uses [reactor.core.publisher.Mono#contextWrite(java.util.function.Function)] to add the header
 /// entries to the context that will be visible to operators downstream of the current filter chain.
 ///
-/// **Note:** Only headers that are listed in the properties `headers` collection, have a non‑`null`
-/// value, and a non‑empty list of values will be propagated. The first value of a multi‑value header is taken.
+/// **Note:** Only headers that are listed in the properties `headers` collection and have a non-empty list of values
+/// will be propagated. The first value of a multi-value header is taken.
 ///
 /// @see MifosTransportRestProperties
 /// @see org.springframework.web.server.WebFilter

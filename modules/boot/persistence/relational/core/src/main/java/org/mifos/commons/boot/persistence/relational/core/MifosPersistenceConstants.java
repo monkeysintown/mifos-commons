@@ -10,10 +10,9 @@ import static org.mifos.commons.boot.core.MifosCommonsBootConstants.MIFOS_COMMON
 
 import lombok.experimental.UtilityClass;
 
-/// Utility class holding constant values used throughout the Mifos messaging system.
+/// Utility class holding constant values of the Mifos relational persistence modules.
 ///
-/// This class defines base paths, prefixes, and specific message keys for resolving internationalized messages and
-/// error codes within the Mifos application.
+/// This class defines the package names and the configuration property prefix of the relational persistence modules.
 ///
 /// Since this is a utility class (annotated with Lombok's `@UtilityClass`), it is not intended to be
 /// instantiated, and no public constructor is provided.
@@ -22,14 +21,19 @@ import lombok.experimental.UtilityClass;
 /// @author <a href="https://github.com/vidakovic" target="_blank">Aleksandar Vidakovic</a>
 @UtilityClass
 public class MifosPersistenceConstants {
+    /// Base package of the relational persistence modules.
     public static final String MIFOS_COMMONS_BOOT_PERSISTENCE_RELATIONAL_BASE_PACKAGE =
             MIFOS_COMMONS_BOOT_BASE_PACKAGE + ".persistence.relational";
+    /// Package of the relational persistence core module.
     public static final String MIFOS_COMMONS_BOOT_PERSISTENCE_RELATIONAL_CORE_PACKAGE =
             MIFOS_COMMONS_BOOT_BASE_PACKAGE + ".core";
+    /// Package of the imperative relational persistence module.
     public static final String MIFOS_COMMONS_BOOT_PERSISTENCE_RELATIONAL_IMPERATIVE_PACKAGE =
             MIFOS_COMMONS_BOOT_BASE_PACKAGE + ".imperative";
+    /// Package of the reactive relational persistence module.
     public static final String MIFOS_COMMONS_BOOT_PERSISTENCE_RELATIONAL_REACTIVE_PACKAGE =
             MIFOS_COMMONS_BOOT_BASE_PACKAGE + ".reactive";
+    /// Prefix of the relational persistence configuration properties.
     public static final String MIFOS_COMMONS_BOOT_PERSISTENCE_RELATIONAL_PROPERTIES_PREFIX =
             MIFOS_COMMONS_BOOT_PROPERTIES_PREFIX + ".persistence.relational";
 }

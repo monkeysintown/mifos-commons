@@ -19,9 +19,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.FluentQuery;
 
+/// Base implementation of [MifosPersistenceRelationalImperativeRepository] delegating to a Spring Data JDBC
+/// QueryDSL repository.
+///
+/// @param <T> the entity type
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class AbstractMifosPersistenceRelationalImperativeRepository<T>
         implements MifosPersistenceRelationalImperativeRepository<T> {
+    /// The QueryDSL repository all operations are delegated to.
     protected final QuerydslJdbcRepository<T, UUID> repository;
 
     @Override

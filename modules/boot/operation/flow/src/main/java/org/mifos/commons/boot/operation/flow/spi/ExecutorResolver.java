@@ -11,5 +11,9 @@ import java.util.concurrent.Executor;
 /// Resolves fork/join executors referenced by name.
 @FunctionalInterface
 public interface ExecutorResolver {
+    /// Resolves an executor.
+    ///
+    /// @param name the executor name
+    /// @return the executor, or empty if there is none with that name
     Optional<Executor> resolve(String name);
 }

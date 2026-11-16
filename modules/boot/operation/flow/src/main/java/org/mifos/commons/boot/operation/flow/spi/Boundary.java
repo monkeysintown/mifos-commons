@@ -13,7 +13,13 @@ import java.util.function.Supplier;
 /// it to `TransactionOperations`, tests use [#NONE].
 @FunctionalInterface
 public interface Boundary {
+    /// No boundary: runs the work directly.
     Boundary NONE = Supplier::get;
 
+    /// Runs `work` inside this boundary.
+    ///
+    /// @param <T> the result type
+    /// @param work the work to run
+    /// @return the result of `work`
     <T> T run(Supplier<T> work);
 }

@@ -21,7 +21,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.data.jdbc.repository.config.EnableJdbcAuditing;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-/// TBD
+/// Auto-configuration of imperative relational persistence: Spring Data JDBC repositories with QueryDSL support,
+/// JDBC auditing, transaction management and the QueryDSL SQL configuration (PostGIS templates).
 @Slf4j
 @RequiredArgsConstructor
 @Configuration

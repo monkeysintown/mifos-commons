@@ -15,26 +15,36 @@ import lombok.RequiredArgsConstructor;
 import org.mifos.commons.boot.core.model.MifosError;
 import org.mifos.commons.boot.core.model.MifosErrorCode;
 
+/// General purpose Mifos exception carrying a structured [MifosError].
+///
+/// @author <a href="https://github.com/vidakovic" target="_blank">Aleksandar Vidakovic</a>
+/// @since 1.0.0
 public class MifosException extends MifosBaseException {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    /// Creates an exception for the given error.
+    ///
+    /// @param error the error describing the failure
     public MifosException(MifosError error) {
         super(error);
     }
 
+    /// Common Mifos error codes.
     @Getter
     @RequiredArgsConstructor
     public enum MifosCommonErrorCode implements MifosErrorCode {
-        /// Write some more Javadoc documentation...
+        /// An unknown or unexpected error.
         MIFOS_COMMONS_ERROR_UNKNOWN(
                 MIFOS_COMMONS_BOOT_ERROR_CODE_START, MIFOS_COMMONS_BOOT_MESSAGE_ERROR_PREFIX + ".unknown"),
-        /// Write some Javadoc documentation...
+        /// A requested resource was not found.
         MIFOS_COMMONS_ERROR_NOT_FOUND(
                 MIFOS_COMMONS_BOOT_ERROR_CODE_START + MIFOS_COMMONS_BOOT_ERROR_CODE_INCREMENT,
                 MIFOS_COMMONS_BOOT_MESSAGE_ERROR_PREFIX + ".not-found");
 
+        /// The numeric error code.
         private final int value;
+        /// The message key of the error.
         private final String key;
 
         @Override

@@ -18,7 +18,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 ///
 /// This class holds all tunable parameters for REST communication, such as error documentation URL, custom HTTP
 /// headers, and default pagination settings. The properties are bound under the prefix
-/// `mifos.common.transport.rest` in the application's configuration (e.g., `application.yml` or
+/// `mifos.commons.transport.rest` in the application's configuration (e.g., `application.yml` or
 /// `application.properties`).
 ///
 /// Lombok annotations are used to generate a builder, getters/setters, constructors, and other boilerplate code.
@@ -33,14 +33,18 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @AllArgsConstructor
 @ConfigurationProperties(prefix = MIFOS_COMMONS_BOOT_TRANSPORT_REST_PROPERTIES_PREFIX)
 public class MifosTransportRestProperties {
+    /// Base URL of the error documentation.
     @Builder.Default
     private String errorUrl = "https://doc.mifos.org/projects/common/errors";
 
+    /// Lower-case names of the request headers to propagate into the request context.
     private Set<String> headers;
 
+    /// Default page number used when a request does not specify one.
     @Builder.Default
     private int defaultPageNumber = 0;
 
+    /// Default page size used when a request does not specify one.
     @Builder.Default
     private int defaultPageSize = 100;
 }

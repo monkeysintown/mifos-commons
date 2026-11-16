@@ -24,14 +24,14 @@ import org.springframework.web.reactive.result.method.annotation.ArgumentResolve
 import org.springframework.web.server.i18n.AcceptHeaderLocaleContextResolver;
 import org.springframework.web.server.i18n.LocaleContextResolver;
 
-/// Spring configuration class for setting up REST transport components in the Mifos Initiative.
+/// Spring configuration class for setting up reactive (WebFlux) REST transport components in the Mifos Initiative.
 ///
-/// This configuration provides beans for locale resolution, pagination argument handling, OpenAPI documentation, CORS
-/// policies, and tenant identification.
+/// This configuration provides beans for `Accept-Language` header based locale resolution and pageable/sort
+/// argument handling (falling back to the default page request).
 ///
 /// @author <a href="https://github.com/vidakovic" target="_blank">Aleksandar Vidakovic</a>
 /// @since 1.0.0
-/// @see MifosTransportRestProperties
+/// @see org.mifos.commons.boot.transport.rest.core.MifosTransportRestProperties
 /// @see org.springframework.context.annotation.Configuration
 @Configuration
 @ComponentScan(MIFOS_COMMONS_BOOT_TRANSPORT_REST_REACTIVE_PACKAGE)

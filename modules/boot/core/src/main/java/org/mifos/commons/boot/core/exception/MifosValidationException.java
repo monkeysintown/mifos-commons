@@ -34,22 +34,29 @@ public class MifosValidationException extends RuntimeException {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    /// The validation errors.
     private final transient Errors errors;
 
+    /// Validation error codes.
     @Getter
     @RequiredArgsConstructor
     public enum MifosValidationErrorCode implements MifosErrorCode {
+        /// An unknown validation error.
         MIFOS_COMMONS_ERROR_VALIDATION_UNKNOWN(
                 MIFOS_COMMONS_BOOT_ERROR_CODE_VALIDATION_START, MIFOS_COMMONS_BOOT_MESSAGE_ERROR_VALIDATION_PREFIX),
+        /// A general validation error.
         MIFOS_COMMONS_ERROR_VALIDATION(
                 MIFOS_COMMONS_BOOT_ERROR_CODE_VALIDATION_START + MIFOS_COMMONS_BOOT_ERROR_CODE_VALIDATION_INCREMENT,
                 MIFOS_COMMONS_BOOT_MESSAGE_ERROR_VALIDATION_PREFIX),
+        /// A constraint violation.
         MIFOS_COMMONS_ERROR_VALIDATION_CONSTRAINT(
                 MIFOS_COMMONS_BOOT_ERROR_CODE_VALIDATION_START + 2 * MIFOS_COMMONS_BOOT_ERROR_CODE_VALIDATION_INCREMENT,
                 MIFOS_COMMONS_BOOT_MESSAGE_ERROR_VALIDATION_PREFIX),
         ;
 
+        /// The numeric error code.
         private final int value;
+        /// The message key of the error.
         private final String key;
 
         @Override

@@ -5,4 +5,5 @@
 ///
 package org.mifos.commons.boot.cli.core;
 
+/// Marker interface for Mifos CLI commands.
 public interface MifosCliCommand {}

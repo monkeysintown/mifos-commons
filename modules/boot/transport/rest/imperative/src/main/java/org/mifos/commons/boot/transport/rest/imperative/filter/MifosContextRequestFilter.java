@@ -16,6 +16,8 @@ import org.mifos.commons.boot.transport.rest.core.MifosTransportRestProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+/// Servlet filter intended to propagate the configured request headers (see [MifosTransportRestProperties]) into
+/// the request context; not implemented yet.
 @Slf4j
 @RequiredArgsConstructor
 @Component

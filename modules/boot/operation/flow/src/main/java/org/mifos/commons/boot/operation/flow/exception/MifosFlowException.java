@@ -16,31 +16,43 @@ import org.mifos.commons.boot.core.exception.MifosBaseException;
 import org.mifos.commons.boot.core.model.MifosError;
 import org.mifos.commons.boot.core.model.MifosErrorCode;
 
+/// Thrown for invalid flow definitions, unresolvable references, invalid configuration and exceeded loop limits.
 public final class MifosFlowException extends MifosBaseException {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    /// Creates an exception.
+    ///
+    /// @param error the error
     public MifosFlowException(MifosError error) {
         super(error);
     }
 
     @Getter
     @RequiredArgsConstructor
+    /// Error codes of the flow module.
     public enum MifosFlowErrorCode implements MifosErrorCode {
+        /// An unspecified flow error.
         MIFOS_COMMONS_ERROR_FLOW_UNKNOWN(
                 MIFOS_COMMONS_BOOT_ERROR_CODE_FLOW_START, MIFOS_COMMONS_BOOT_MESSAGE_ERROR_FLOW_PREFIX + ".unknown"),
+        /// A configured class name (e.g. in `mifos.flow.retry.*.retry-on`) cannot be loaded.
         MIFOS_COMMONS_ERROR_FLOW_CLASS_UNKNOWN(
                 MIFOS_COMMONS_BOOT_ERROR_CODE_FLOW_START + MIFOS_COMMONS_BOOT_ERROR_CODE_FLOW_INCREMENT,
                 MIFOS_COMMONS_BOOT_MESSAGE_ERROR_FLOW_PREFIX + ".class.unknown"),
+        /// A `repeatWhile` loop reached its maximum number of iterations.
         MIFOS_COMMONS_ERROR_FLOW_ITERATION_LIMIT(
                 MIFOS_COMMONS_BOOT_ERROR_CODE_FLOW_START + 2 * MIFOS_COMMONS_BOOT_ERROR_CODE_FLOW_INCREMENT,
                 MIFOS_COMMONS_BOOT_MESSAGE_ERROR_FLOW_PREFIX + ".iteration.limit"),
+        /// A flow definition violates a structural rule or references something that cannot be resolved.
         MIFOS_COMMONS_ERROR_FLOW_DEFINITION(
                 MIFOS_COMMONS_BOOT_ERROR_CODE_FLOW_START + 3 * MIFOS_COMMONS_BOOT_ERROR_CODE_FLOW_INCREMENT,
                 MIFOS_COMMONS_BOOT_MESSAGE_ERROR_FLOW_PREFIX + ".definition"),
         ;
 
+        /// The numeric error code.
         private final int value;
+
+        /// The message key.
         private final String key;
 
         @Override

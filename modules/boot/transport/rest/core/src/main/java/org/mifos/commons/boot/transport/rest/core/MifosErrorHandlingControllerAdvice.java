@@ -33,14 +33,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.support.WebExchangeBindException;
 
-/// Global REST controller advice for handling exceptions and producing Problem Detail responses (<a
-/// href="https://datatracker.ietf.org/doc/html/rfc7807" target="_blank">RFC 7807</a>) for the Mifos application.
+/// Global REST controller advice for handling exceptions and producing Problem Detail responses
+/// ([RFC 7807](https://datatracker.ietf.org/doc/html/rfc7807)) for the Mifos application.
 ///
 /// This advice intercepts exceptions thrown by controller methods and transforms them into structured
 /// [org.springframework.http.ProblemDetail] responses. It is designed to handle both low-level framework
 /// exceptions and custom Mifos exceptions, providing consistent error formatting with additional "errors" property
-/// where
-/// applicable.
+/// where applicable.
 ///
 /// The advice is generic over `T extends Throwable` and participates in exception handling for all controller
 /// advice methods. It produces responses with content type `application/problem+json`.
@@ -61,6 +60,10 @@ public class MifosErrorHandlingControllerAdvice<T extends Throwable> {
     private final MessageSource messageSource;
     private final MifosCommonsBootProperties properties;
 
+    /// Handles requests whose payload exceeds the configured buffer limit.
+    ///
+    /// @param e the buffer limit exception
+    /// @return a problem detail response with status `417 Expectation Failed`
     @ExceptionHandler(DataBufferLimitException.class)
     public ResponseEntity<ProblemDetail> handleMaxSizeException(DataBufferLimitException e) {
         ProblemDetail problemDetails = ProblemDetail.forStatusAndDetail(BAD_REQUEST, e.getMessage());

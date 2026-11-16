@@ -61,8 +61,7 @@ import org.mifos.commons.boot.operation.usecase.MifosUsecase.MifosRequest;
 /// - no fork/join inside a boundary (forks run on other threads and would escape the transaction).
 ///
 /// Both rules are decided from the [MifosFlow.BoundaryRef] alone, never from how it resolves, so a definition that is
-/// invalid
-/// in production is also invalid in a test that resolves every boundary to [Boundary#NONE].
+/// invalid in production is also invalid in a test that resolves every boundary to [Boundary#NONE].
 public final class DefaultFlowEngine implements MifosFlow.Engine {
     private final Map<String, Boundary> boundaries;
     private final BoundaryResolver boundaryResolver;
@@ -88,6 +87,9 @@ public final class DefaultFlowEngine implements MifosFlow.Engine {
         this.sleeper = builder.sleeper;
     }
 
+    /// Creates a builder with no registered entries, resolvers that resolve nothing, and [MifosFlow.Sleeper#THREAD].
+    ///
+    /// @return a new builder
     public static Builder builder() {
         return new Builder();
     }
@@ -538,7 +540,7 @@ public final class DefaultFlowEngine implements MifosFlow.Engine {
     // --- builder ---
 
     /// Builds a [DefaultFlowEngine]. Lookups try the explicitly registered entries first, then the resolver.
-    /// Anything that cannot be resolved makes [#bind] fail.
+    /// Anything that cannot be resolved makes [DefaultFlowEngine#bind] fail.
     public static final class Builder {
         private final Map<String, Boundary> boundaries = new HashMap<>();
         private BoundaryResolver boundaryResolver = name -> Optional.empty();
@@ -558,74 +560,138 @@ public final class DefaultFlowEngine implements MifosFlow.Engine {
 
         private Builder() {}
 
+        /// Registers a boundary under a name.
+        ///
+        /// @param name the boundary name
+        /// @param boundary the boundary
+        /// @return this builder
         public Builder boundary(String name, Boundary boundary) {
             boundaries.put(requireNonNull(name), requireNonNull(boundary));
             return this;
         }
 
+        /// Registers a boundary under the name of `ref`.
+        ///
+        /// @param ref the named reference
+        /// @param boundary the boundary
+        /// @return this builder
         public Builder boundary(MifosFlow.BoundaryRef.ByName ref, Boundary boundary) {
             return boundary(ref.name(), boundary);
         }
 
+        /// Sets the resolver for boundaries that are not registered explicitly.
+        ///
+        /// @param resolver the resolver
+        /// @return this builder
         public Builder boundaries(BoundaryResolver resolver) {
             this.boundaryResolver = requireNonNull(resolver);
             return this;
         }
 
         /// Resolves every named boundary to [Boundary#NONE], for tests. Validation is unaffected.
+        ///
+        /// @return this builder
         public Builder withoutBoundaries() {
             return boundaries(name -> Optional.of(Boundary.NONE));
         }
 
+        /// Registers a retry policy under a name.
+        ///
+        /// @param name the policy name
+        /// @param policy the policy
+        /// @return this builder
         public Builder retryPolicy(String name, MifosFlow.RetryPolicy policy) {
             retryPolicies.put(requireNonNull(name), requireNonNull(policy));
             return this;
         }
 
+        /// Registers a retry policy under the name of `ref`.
+        ///
+        /// @param ref the named reference
+        /// @param policy the policy
+        /// @return this builder
         public Builder retryPolicy(MifosFlow.RetryRef.ByName ref, MifosFlow.RetryPolicy policy) {
             return retryPolicy(ref.name(), policy);
         }
 
+        /// Sets the resolver for retry policies that are not registered explicitly.
+        ///
+        /// @param resolver the resolver
+        /// @return this builder
         public Builder retryPolicies(RetryPolicyResolver resolver) {
             this.retryPolicyResolver = requireNonNull(resolver);
             return this;
         }
 
+        /// Registers a fork/join executor under a name.
+        ///
+        /// @param name the executor name
+        /// @param executor the executor
+        /// @return this builder
         public Builder executor(String name, Executor executor) {
             executors.put(requireNonNull(name), requireNonNull(executor));
             return this;
         }
 
+        /// Registers a fork/join executor under the name of `ref`.
+        ///
+        /// @param ref the named reference
+        /// @param executor the executor
+        /// @return this builder
         public Builder executor(MifosFlow.ExecutorRef.ByName ref, Executor executor) {
             return executor(ref.name(), executor);
         }
 
+        /// Sets the resolver for executors that are not registered explicitly.
+        ///
+        /// @param resolver the resolver
+        /// @return this builder
         public Builder executors(ExecutorResolver resolver) {
             this.executorResolver = requireNonNull(resolver);
             return this;
         }
 
+        /// Registers a usecase for references by type.
+        ///
+        /// @param <U> the usecase type
+        /// @param type the type flow definitions reference
+        /// @param usecase the usecase
+        /// @return this builder
         public <U extends MifosUsecase<?, ?>> Builder usecase(Class<U> type, U usecase) {
             usecases.put(requireNonNull(type), requireNonNull(usecase));
             return this;
         }
 
+        /// Sets the resolver for usecases that are not registered explicitly.
+        ///
+        /// @param resolver the resolver
+        /// @return this builder
         public Builder usecases(UsecaseResolver resolver) {
             this.usecaseResolver = requireNonNull(resolver);
             return this;
         }
 
         /// Adds an interceptor; the first one added is the outermost.
+        ///
+        /// @param interceptor the interceptor
+        /// @return this builder
         public Builder interceptor(MifosFlow.Interceptor interceptor) {
             interceptors.add(requireNonNull(interceptor));
             return this;
         }
 
+        /// Sets how the engine pauses between retry attempts; replace it in tests to avoid waiting.
+        ///
+        /// @param sleeper the sleeper
+        /// @return this builder
         public Builder sleeper(MifosFlow.Sleeper sleeper) {
             this.sleeper = requireNonNull(sleeper);
             return this;
         }
 
+        /// Builds the engine.
+        ///
+        /// @return the engine
         public DefaultFlowEngine build() {
             return new DefaultFlowEngine(this);
         }

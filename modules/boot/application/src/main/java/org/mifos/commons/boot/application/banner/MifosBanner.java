@@ -21,6 +21,7 @@ import org.springframework.boot.ansi.AnsiStyle;
 import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.core.env.Environment;
 
+/// Startup banner rendering "Mifos - <text>" (text taken from the `mifos.banner` property) as FIGlet ASCII art.
 @Slf4j
 @RequiredArgsConstructor
 @ImportRuntimeHints(MifosBanner.MifosBannerRuntimeHints.class)
@@ -53,6 +54,7 @@ final class MifosBanner implements Banner {
         }
     }
 
+    /// Registers the banner font resource for native images.
     static class MifosBannerRuntimeHints implements RuntimeHintsRegistrar {
 
         @Override

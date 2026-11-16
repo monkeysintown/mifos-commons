@@ -35,8 +35,8 @@ import org.springframework.web.method.HandlerMethod;
 
 /// Spring configuration class for setting up REST transport components in the Mifos Initiative.
 ///
-/// This configuration provides beans for locale resolution, pagination argument handling, OpenAPI documentation, CORS
-/// policies, and tenant identification.
+/// This configuration provides beans for the default page request, OpenAPI documentation, the tenant ID header in
+/// OpenAPI operations, and CORS policies.
 ///
 /// @author <a href="https://github.com/vidakovic" target="_blank">Aleksandar Vidakovic</a>
 /// @since 1.0.0

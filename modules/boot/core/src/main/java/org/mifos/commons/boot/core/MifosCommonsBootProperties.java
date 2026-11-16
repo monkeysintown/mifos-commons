@@ -14,25 +14,20 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 
 /// Configuration properties for Mifos common functionality.
 ///
-/// This class holds configuration settings that can be defined in the application's configuration files (e.g.,
-/// `application.yml` or `application.properties`) under the prefix `mifos.common`. It is designed to
-/// be used with Spring Boot's `@ConfigurationProperties` binding.
-///
-/// The class is annotated with Lombok annotations to reduce boilerplate:
-///
-///   - `@Builder` provides a builder pattern for constructing instances.
-///   - `@Data` generates getters, setters, `toString()`, `equals()`, and `hashCode()` methods.
-///   - `@NoArgsConstructor` and `@AllArgsConstructor` generate the corresponding constructors.
+/// This record holds configuration settings that can be defined in the application's configuration files (e.g.,
+/// `application.yml` or `application.properties`) under the prefix `mifos.commons`. It is bound by Spring Boot's
+/// `@ConfigurationProperties` support.
 ///
 /// Example usage in `application.yml`:
 ///
-/// ``````
-///
+/// ```yaml
 /// mifos:
-///   common:
+///   commons:
 ///     error-url: "https://custom.domain/errors"
 /// ```
-/// ```
+///
+/// @param errorUrl base URL of the error documentation, used e.g. as the type URI of problem details
+/// @param tui the terminal UI type to use (see [MifosCommonsBootTuiType])
 ///
 /// @author <a href="https://github.com/vidakovic" target="_blank">Aleksandar Vidakovic</a>
 /// @since 1.0.0
@@ -42,22 +37,39 @@ public record MifosCommonsBootProperties(
         String errorUrl,
 
         String tui) {
+    /// Supported terminal UI implementations.
     public enum MifosCommonsBootTuiType {
+        /// Picocli based command line interface.
         PICO,
+        /// Spring Shell based interactive shell.
         SHELL,
+        /// TamboUI based terminal UI.
         TAMBOUI
     }
 
+    /// Transaction propagation behaviour of a flow boundary (mirrors Spring's transaction propagation types).
     public enum MifosCommonsBootFlowPropagation {
+        /// Join the current transaction or create a new one if none exists.
         REQUIRED,
+        /// Always create a new transaction, suspending the current one if present.
         REQUIRES_NEW,
+        /// Join the current transaction; fail if none exists.
         MANDATORY,
+        /// Join the current transaction if present; otherwise run non-transactionally.
         SUPPORTS,
+        /// Run non-transactionally, suspending the current transaction if present.
         NOT_SUPPORTED,
+        /// Run non-transactionally; fail if a transaction exists.
         NEVER,
+        /// Run in a nested transaction (savepoint) if a transaction exists; otherwise like [#REQUIRED].
         NESTED
     }
 
+    /// Transaction settings of a flow boundary.
+    ///
+    /// @param propagation transaction propagation behaviour
+    /// @param readOnly whether the transaction is read-only
+    /// @param timeout transaction timeout; `null` for the transaction manager's default
     /// @param transactionManager bean name of the transaction manager; empty for the primary one
     public record MifosCommonsBootFlowBoundaryProperties(
             @DefaultValue("required") MifosCommonsBootFlowPropagation propagation,
@@ -65,6 +77,13 @@ public record MifosCommonsBootProperties(
             Duration timeout,
             String transactionManager) {}
 
+    /// Settings of a flow retry policy.
+    ///
+    /// @param maxAttempts total number of attempts, including the first one
+    /// @param initialBackoff delay after the first failed attempt
+    /// @param multiplier growth factor of the delay per failed attempt
+    /// @param maxBackoff upper bound for the delay
+    /// @param jitter fraction in `[0, 1]` by which each delay is randomly shortened
     /// @param retryOn fully qualified exception class names; empty means
     ///     `org.springframework.dao.ConcurrencyFailureException` (optimistic and pessimistic locking conflicts)
     public record MifosCommonsBootFlowRetryProperties(
@@ -75,6 +94,9 @@ public record MifosCommonsBootProperties(
             @DefaultValue("0.5") double jitter,
             @DefaultValue List<String> retryOn) {}
 
+    /// Settings of a flow executor.
+    ///
+    /// @param virtualThreads whether forks run on virtual threads
     /// @param concurrencyLimit maximum number of concurrently running forks; -1 for unlimited
     public record MifosCommonsBootFlowExecutorProperties(
             @DefaultValue("true") boolean virtualThreads,

@@ -10,5 +10,9 @@ import java.util.Optional;
 /// Resolves boundaries referenced by name, e.g. `required` to a `TransactionTemplate` with `PROPAGATION_REQUIRED`.
 @FunctionalInterface
 public interface BoundaryResolver {
+    /// Resolves a boundary.
+    ///
+    /// @param name the boundary name
+    /// @return the boundary, or empty if there is none with that name
     Optional<Boundary> resolve(String name);
 }

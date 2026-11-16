@@ -9,13 +9,18 @@ import static org.mifos.commons.boot.core.MifosCommonsBootConstants.MIFOS_COMMON
 
 import lombok.experimental.UtilityClass;
 
+/// Constants of the TamboUI based Mifos CLI module.
 @UtilityClass
 public class MifosCliTambouiConstants {
+    /// Base package of the TamboUI CLI module.
     public static final String MIFOS_COMMONS_BOOT_CLI_TAMBOUI_PACKAGE = MIFOS_COMMONS_BOOT_CLI_PACKAGE + ".tamboui";
+    /// Package scanned for TamboUI CLI commands.
     public static final String MIFOS_COMMONS_BOOT_CLI_TAMBOUI_COMMAND_PACKAGE =
             MIFOS_COMMONS_BOOT_CLI_TAMBOUI_PACKAGE + ".command";
+    /// Package scanned for the TamboUI CLI runner.
     public static final String MIFOS_COMMONS_BOOT_CLI_TAMBOUI_RUNNER_PACKAGE =
             MIFOS_COMMONS_BOOT_CLI_TAMBOUI_PACKAGE + ".runner";
+    /// Package scanned for TamboUI CLI error handlers.
     public static final String MIFOS_COMMONS_BOOT_CLI_TAMBOUI_ERROR_PACKAGE =
             MIFOS_COMMONS_BOOT_CLI_TAMBOUI_PACKAGE + ".error";
 }

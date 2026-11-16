@@ -18,8 +18,9 @@ import lombok.experimental.FieldNameConstants;
 
 /// Represents an error response returned by the Mifos platform.
 ///
-/// This class encapsulates a single error detail, including the field that caused the error, a human-readable error
-/// message, and an internal error code. It is typically used within error response payloads from Mifos APIs.
+/// This class encapsulates a single error detail, including its category, an error code, the field that caused the
+/// error, a human-readable error message, message arguments and an optional cause. It is typically carried by Mifos
+/// exceptions and rendered into error response payloads of Mifos APIs.
 ///
 /// The class leverages Lombok annotations to reduce boilerplate code:
 ///
@@ -43,13 +44,24 @@ public class MifosError implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    /// The error category.
     private MifosErrorCategory category;
+    /// The error code.
     private MifosErrorCode code;
+    /// The field that caused the error, if any.
     private String field;
+    /// A human-readable error message.
     private String message;
+    /// Arguments for the parameterized error message.
     private List<Object> args;
+    /// The underlying cause, if any.
     private Throwable cause;
 
+    /// Creates an error.
+    ///
+    /// @param category the error category
+    /// @param code the error code
+    /// @return the error
     public static MifosError of(MifosErrorCategory category, MifosErrorCode code) {
         return MifosError.builder()
                 .category(category)
@@ -58,14 +70,33 @@ public class MifosError implements Serializable {
                 .build();
     }
 
+    /// Creates an error.
+    ///
+    /// @param category the error category
+    /// @param code the error code
+    /// @param args arguments for the parameterized error message
+    /// @return the error
     public static MifosError of(MifosErrorCategory category, MifosErrorCode code, List<Object> args) {
         return MifosError.builder().category(category).code(code).args(args).build();
     }
 
+    /// Creates an error.
+    ///
+    /// @param category the error category
+    /// @param code the error code
+    /// @param cause the underlying cause
+    /// @return the error
     public static MifosError of(MifosErrorCategory category, MifosErrorCode code, Throwable cause) {
         return MifosError.builder().category(category).code(code).cause(cause).build();
     }
 
+    /// Creates an error.
+    ///
+    /// @param category the error category
+    /// @param code the error code
+    /// @param cause the underlying cause
+    /// @param args arguments for the parameterized error message
+    /// @return the error
     public static MifosError of(MifosErrorCategory category, MifosErrorCode code, Throwable cause, List<Object> args) {
         return MifosError.builder()
                 .category(category)
@@ -75,10 +106,23 @@ public class MifosError implements Serializable {
                 .build();
     }
 
+    /// Creates an error.
+    ///
+    /// @param category the error category
+    /// @param code the error code
+    /// @param field the field that caused the error
+    /// @return the error
     public static MifosError of(MifosErrorCategory category, MifosErrorCode code, String field) {
         return MifosError.builder().category(category).code(code).field(field).build();
     }
 
+    /// Creates an error.
+    ///
+    /// @param category the error category
+    /// @param code the error code
+    /// @param field the field that caused the error
+    /// @param message a human-readable error message
+    /// @return the error
     public static MifosError of(MifosErrorCategory category, MifosErrorCode code, String field, String message) {
         return MifosError.builder()
                 .category(category)
@@ -88,6 +132,14 @@ public class MifosError implements Serializable {
                 .build();
     }
 
+    /// Creates an error.
+    ///
+    /// @param category the error category
+    /// @param code the error code
+    /// @param field the field that caused the error
+    /// @param message a human-readable error message
+    /// @param cause the underlying cause
+    /// @return the error
     public static MifosError of(
             MifosErrorCategory category, MifosErrorCode code, String field, String message, Throwable cause) {
         return MifosError.builder()
@@ -99,30 +151,68 @@ public class MifosError implements Serializable {
                 .build();
     }
 
+    /// Creates an error in the [MifosErrorCategory#BUSINESS_RULE] category.
+    ///
+    /// @param code the error code
+    /// @return the error
     public static MifosError of(MifosErrorCode code) {
         return of(BUSINESS_RULE, code);
     }
 
+    /// Creates an error in the [MifosErrorCategory#BUSINESS_RULE] category.
+    ///
+    /// @param code the error code
+    /// @param args arguments for the parameterized error message
+    /// @return the error
     public static MifosError of(MifosErrorCode code, List<Object> args) {
         return of(BUSINESS_RULE, code, args);
     }
 
+    /// Creates an error in the [MifosErrorCategory#BUSINESS_RULE] category.
+    ///
+    /// @param code the error code
+    /// @param cause the underlying cause
+    /// @return the error
     public static MifosError of(MifosErrorCode code, Throwable cause) {
         return of(BUSINESS_RULE, code, cause);
     }
 
+    /// Creates an error in the [MifosErrorCategory#BUSINESS_RULE] category.
+    ///
+    /// @param code the error code
+    /// @param cause the underlying cause
+    /// @param args arguments for the parameterized error message
+    /// @return the error
     public static MifosError of(MifosErrorCode code, Throwable cause, List<Object> args) {
         return of(BUSINESS_RULE, code, cause, args);
     }
 
+    /// Creates an error in the [MifosErrorCategory#BUSINESS_RULE] category.
+    ///
+    /// @param code the error code
+    /// @param field the field that caused the error
+    /// @return the error
     public static MifosError of(MifosErrorCode code, String field) {
         return of(BUSINESS_RULE, code, field);
     }
 
+    /// Creates an error in the [MifosErrorCategory#BUSINESS_RULE] category.
+    ///
+    /// @param code the error code
+    /// @param field the field that caused the error
+    /// @param message a human-readable error message
+    /// @return the error
     public static MifosError of(MifosErrorCode code, String field, String message) {
         return of(BUSINESS_RULE, code, field, message);
     }
 
+    /// Creates an error in the [MifosErrorCategory#BUSINESS_RULE] category.
+    ///
+    /// @param code the error code
+    /// @param field the field that caused the error
+    /// @param message a human-readable error message
+    /// @param cause the underlying cause
+    /// @return the error
     public static MifosError of(MifosErrorCode code, String field, String message, Throwable cause) {
         return of(BUSINESS_RULE, code, field, message, cause);
     }

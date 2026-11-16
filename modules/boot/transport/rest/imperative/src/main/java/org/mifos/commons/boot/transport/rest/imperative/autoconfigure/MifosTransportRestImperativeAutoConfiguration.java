@@ -19,14 +19,13 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 
-/// Spring configuration class for setting up REST transport components in the Mifos Initiative.
+/// Spring configuration class for setting up imperative (Servlet) REST transport components in the Mifos Initiative.
 ///
-/// This configuration provides beans for locale resolution, pagination argument handling, OpenAPI documentation, CORS
-/// policies, and tenant identification.
+/// This configuration provides the primary `Accept-Language` header based locale resolver.
 ///
 /// @author <a href="https://github.com/vidakovic" target="_blank">Aleksandar Vidakovic</a>
 /// @since 1.0.0
-/// @see MifosTransportRestProperties
+/// @see org.mifos.commons.boot.transport.rest.core.MifosTransportRestProperties
 /// @see Configuration
 @Configuration
 @ComponentScan(MIFOS_COMMONS_BOOT_TRANSPORT_REST_IMPERATIVE_PACKAGE)

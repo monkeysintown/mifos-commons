@@ -8,4 +8,5 @@ package org.mifos.commons.boot.cli.core;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.ExitCodeGenerator;
 
+/// Entry point of a Mifos CLI implementation: runs on application startup and provides the process exit code.
 public interface MifosCliRunner extends CommandLineRunner, ExitCodeGenerator {}

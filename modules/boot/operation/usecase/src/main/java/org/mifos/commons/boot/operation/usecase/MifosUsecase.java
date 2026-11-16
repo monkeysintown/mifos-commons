@@ -19,11 +19,15 @@ import java.io.Serializable;
 /// @since 1.0.0
 @FunctionalInterface
 public interface MifosUsecase<REQ extends MifosUsecase.MifosRequest, RES extends MifosUsecase.MifosResponse> {
+    /// Executes the use case.
+    ///
+    /// @param request the request
+    /// @return the response
     RES execute(REQ request);
 
-    /// Marker interface [MifosRequest] for request objects
+    /// Marker interface for use case request objects.
     interface MifosRequest extends Serializable {}
 
-    /// Marker interface [MifosResponse] for response objects
+    /// Marker interface for use case response objects.
     interface MifosResponse extends Serializable {}
 }

@@ -34,7 +34,7 @@ import org.openjdk.jmh.infra.Blackhole;
 
 /// What does writing business logic as a bound flow cost compared to one hand-written method?
 ///
-/// The same ten-step transfer is implemented three ways:
+/// The same transfer is implemented three ways:
 ///
 /// - `inline`: plain Java in one method, no usecase objects; the floor.
 /// - `usecases`: one method calling the same usecase objects with the same request and response records, but
@@ -61,6 +61,18 @@ public class FlowBenchmark {
 
     record AccountRequest(long accountId) implements MifosUsecase.MifosRequest {}
 
+    /// The flow context: an account transfer.
+    ///
+    /// @param accountId the account
+    /// @param amount the amount to transfer
+    /// @param balance the loaded account balance
+    /// @param fee the computed fee
+    /// @param limit the loaded account limit
+    /// @param risk the risk score
+    /// @param flagged whether the transfer was flagged as risky
+    /// @param entryId the id of the posted journal entry
+    /// @param newBalance the balance after the transfer
+    /// @param status the transfer status
     public record Transfer(
             long accountId,
             long amount,
@@ -148,6 +160,7 @@ public class FlowBenchmark {
 
     // --- state ---
 
+    /// Simulated business logic per usecase, in JMH CPU tokens; 0 isolates the pure overhead.
     @Param({"0", "1000"})
     public int work;
 
@@ -175,6 +188,7 @@ public class FlowBenchmark {
     static final Transfer OK = Transfer.of(42, 500);
     static final Transfer TOO_MUCH = Transfer.of(42, 1_000_000);
 
+    /// Creates the usecases for the current `work` and binds the flows, once per trial.
     @Setup
     public void setUp() {
         int w = work;
@@ -253,8 +267,8 @@ public class FlowBenchmark {
         flowFailureCheap = engine.bind(recoveringCheap);
     }
 
-    /// Ten steps: five lookups or calculations, a funds check, a risk score with a conditional flag, a posting,
-    /// a balance update and a status tap.
+    /// Nine steps: a validation check, three lookups or calculations, a funds check, a risk score, a posting,
+    /// a balance update and an empty tap. (The conditional flag is currently commented out.)
     Definition<Transfer> transfer(MifosUsecase<FundsRequest, Amount> funds) {
         return sequence(
                         check(t -> new AmountRequest(t.amount()), validate),
@@ -291,6 +305,8 @@ public class FlowBenchmark {
     // --- baselines ---
 
     /// The floor: the same logic as plain Java, no usecase objects, no request or response records.
+    ///
+    /// @return the completed transfer
     @Benchmark
     public Transfer inline() {
         int w = work;
@@ -321,6 +337,8 @@ public class FlowBenchmark {
     }
 
     /// One method calling the same usecases, with the same requests and responses, but mutable locals.
+    ///
+    /// @return the completed transfer
     @Benchmark
     public Transfer usecases() {
         Transfer t = OK;
@@ -342,16 +360,25 @@ public class FlowBenchmark {
 
     // --- flows ---
 
+    /// The bound flow without interceptors.
+    ///
+    /// @return the completed transfer
     @Benchmark
     public Transfer flow() {
         return flow.run(OK);
     }
 
+    /// The bound flow with an interceptor that only delegates.
+    ///
+    /// @return the completed transfer
     @Benchmark
     public Transfer flowNoopInterceptor() {
         return flowNoopInterceptor.run(OK);
     }
 
+    /// The bound flow with an interceptor that times every step.
+    ///
+    /// @return the completed transfer
     @Benchmark
     public Transfer flowTimingInterceptor() {
         return flowTimingInterceptor.run(OK);
@@ -359,6 +386,9 @@ public class FlowBenchmark {
 
     // --- failure path: a business outcome four steps in ---
 
+    /// The usecases baseline up to the failing funds check, catching the exception (with stack trace).
+    ///
+    /// @return the declined transfer
     @Benchmark
     public Transfer failureUsecasesStackTrace() {
         Transfer t = TOO_MUCH;
@@ -375,11 +405,17 @@ public class FlowBenchmark {
         }
     }
 
+    /// The bound flow recovering from the failing funds check; the exception captures a stack trace.
+    ///
+    /// @return the declined transfer
     @Benchmark
     public Transfer failureFlowStackTrace() {
         return flowFailure.run(TOO_MUCH);
     }
 
+    /// The bound flow recovering from the failing funds check; the exception has no stack trace.
+    ///
+    /// @return the declined transfer
     @Benchmark
     public Transfer failureFlowNoStackTrace() {
         return flowFailureCheap.run(TOO_MUCH);
@@ -388,6 +424,8 @@ public class FlowBenchmark {
     // --- the anti-pattern ---
 
     /// Binding on every call instead of once: resolution, validation and compilation each time.
+    ///
+    /// @return the completed transfer
     @Benchmark
     public Transfer bindPerCall() {
         return engine.bind(definition).run(OK);
