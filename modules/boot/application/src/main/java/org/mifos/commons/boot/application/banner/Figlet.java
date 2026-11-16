@@ -64,7 +64,7 @@ final class Figlet {
     /// @return the rendered banner together with the per-cell ink ownership
     /// @throws IOException if the stream cannot be read or is not a valid `.flf` font
     static RenderResult renderTracked(InputStream fontStream, String text) throws IOException {
-        return parse(fontStream).renderTracked(text);
+        return parse(fontStream).renderWithOwners(text);
     }
 
     /// A rendered banner together with per-cell ink ownership: `owner[row][col]` is the index of the input
@@ -72,6 +72,7 @@ final class Figlet {
     ///
     /// @param banner the rendered banner rows, each terminated by `'\n'`
     /// @param owner per-cell index of the owning input character, or `-1` for a blank cell
+    @SuppressWarnings("ArrayRecordComponent") // internal, never compared or hashed
     record RenderResult(String banner, int[][] owner) {}
 
     /// Parses a `.flf` font stream and returns a [Figlet] object that represents the font.
@@ -85,7 +86,7 @@ final class Figlet {
             throw new IOException("Not a FIGlet .flf font (bad signature)");
         }
         var hardBlank = header.charAt(5);
-        String[] params = header.substring(6).trim().split("\\s+");
+        String[] params = header.substring(6).trim().split("\\s+", -1);
         if (params.length < 5) {
             throw new IOException("Malformed .flf header: " + header);
         }
@@ -139,9 +140,9 @@ final class Figlet {
     /// empty array if the stream ends before a full glyph can be read.
     private static String[] readGlyph(BufferedReader reader, int height) throws IOException {
         String[] rows = new String[height];
-        var width = 0;
+        @Var var width = 0;
         for (var i = 0; i < height; i++) {
-            String line = reader.readLine();
+            @Var String line = reader.readLine();
             if (line == null) {
                 return new String[0]; // no more glyph data in the stream
             }
@@ -153,7 +154,7 @@ final class Figlet {
             }
             if (!line.isEmpty()) {
                 var endMark = line.charAt(line.length() - 1);
-                var end = line.length();
+                @Var var end = line.length();
                 while (end > 0 && line.charAt(end - 1) == endMark) {
                     end--;
                 }
@@ -174,10 +175,10 @@ final class Figlet {
     /// Renders the input text using the FIGlet font represented by the current instance. The text is transformed into a
     /// visual representation based on the font glyphs and smushing configuration.
     private String render(String text) {
-        return renderTracked(text).banner();
+        return renderWithOwners(text).banner();
     }
 
-    private RenderResult renderTracked(String text) {
+    private RenderResult renderWithOwners(String text) {
         StringBuilder[] out = new StringBuilder[height];
         // owner[r][c] is the index of the input character whose visible ink occupies cell (r, c), or -1. It
         // lets the banner be coloured per cell, which is what slanted/overlapping fonts need: a colour change
@@ -186,8 +187,8 @@ final class Figlet {
         for (@Var var i = 0; i < height; i++) {
             out[i] = new StringBuilder();
         }
-        var outLen = 0;
-        var prevWidth = 0; // width of the previously placed glyph, for the narrow-character smush guard
+        @Var var outLen = 0;
+        @Var var prevWidth = 0; // width of the previously placed glyph, for the narrow-character smush guard
 
         for (var i = 0; i < text.length(); i++) {
             String[] glyph = glyphs.get((int) text.charAt(i));
@@ -236,7 +237,7 @@ final class Figlet {
 
         var result = new StringBuilder();
         for (@Var var r = 0; r < height; r++) {
-            String row = out[r].toString();
+            @Var String row = out[r].toString();
             if (hardBlank != ' ') {
                 row = row.replace(hardBlank, ' ');
             }
@@ -253,11 +254,11 @@ final class Figlet {
         // Smushing (overlapping two visible characters into one column) is only attempted when both the
         // previous and current characters are at least two columns wide; otherwise only fitting applies.
         var allowSmush = prevWidth >= 2 && charWidth >= 2;
-        var maxSmush = charWidth;
+        @Var var maxSmush = charWidth;
         for (var r = 0; r < height; r++) {
             StringBuilder row = out[r];
-            var trailing = 0; // blank columns at the right of the accumulated row
-            var idx = outLen - 1;
+            @Var var trailing = 0; // blank columns at the right of the accumulated row
+            @Var var idx = outLen - 1;
             while (idx >= 0 && row.charAt(idx) == ' ') {
                 trailing++;
                 idx--;
@@ -265,13 +266,13 @@ final class Figlet {
             char left = idx >= 0 ? row.charAt(idx) : 0;
 
             String gr = glyph[r];
-            var leading = 0; // blank columns at the left of the incoming glyph row
+            @Var var leading = 0; // blank columns at the left of the incoming glyph row
             while (leading < charWidth && gr.charAt(leading) == ' ') {
                 leading++;
             }
             char right = leading < charWidth ? gr.charAt(leading) : 0;
 
-            var amt = trailing + leading;
+            @Var var amt = trailing + leading;
             // If both touching characters are visible and can be smushed into one, one more column overlaps.
             if (allowSmush && left != 0 && right != 0 && merge(left, right) != 0) {
                 amt++;

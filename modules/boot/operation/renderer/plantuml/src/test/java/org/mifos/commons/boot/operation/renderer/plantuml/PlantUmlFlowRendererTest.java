@@ -13,7 +13,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-public class PlantUmlFlowRendererTest {
+final class PlantUmlFlowRendererTest {
     @Test
     @Disabled
     @SuppressWarnings({"java:S1607", "java:S1135"})
@@ -21,7 +21,7 @@ public class PlantUmlFlowRendererTest {
         var renderer = new PlantUmlFlowRenderer();
 
         // TODO: fix this
-        var puml = renderer.render("Test", null);
+        var puml = renderer.render(null, "Test");
 
         assertNotNull(puml);
 

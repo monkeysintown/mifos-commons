@@ -10,8 +10,9 @@ import org.mifos.commons.boot.operation.usecase.MifosUsecase;
 import org.mifos.commons.boot.operation.usecase.MifosUsecase.MifosRequest;
 import org.mifos.commons.boot.operation.usecase.MifosUsecase.MifosResponse;
 
-/// A usecase, referenced by type (resolved by the [MifosFlow.Engine], e.g. as a Spring bean) or given as an
-/// instance.
+/// A usecase, referenced by type (resolved by the
+/// [MifosFlow.Engine][org.mifos.commons.boot.operation.flow.MifosFlow.Engine], e.g. as a Spring bean) or given as
+/// an instance.
 ///
 /// Referencing by type lets flow definitions be static constants that do not depend on Spring.
 ///

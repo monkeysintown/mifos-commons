@@ -30,7 +30,7 @@ import org.mifos.commons.boot.operation.flow.spi.Renderer;
 /// "Order Process" diagram.
 public final class KumlFlowRenderer implements Renderer {
     @Override
-    public String render(String title, MifosFlow.Definition<?> definition) {
+    public String render(MifosFlow.Definition<?> definition, String title) {
         // 1. Build the BPMN model
         var mb = new BpmnModelBuilder("Order Management");
 

@@ -37,8 +37,6 @@ final class MifosBanner implements Banner {
             var text = environment.getProperty(MIFOS_PROPERTY_BANNER, String.class);
             var banner =
                     Figlet.renderTracked(font, "Mifos - %s".formatted(text)).banner();
-            // var appVersion = String.format("(%s)", environment.getProperty("build.version")); // TODO: add build
-            // properties
             var version = String.format("--- Powered by Spring Boot (v%s) ---", SpringBootVersion.getVersion());
             var padding = " ".repeat(Math.max(0, STRAP_LINE_SIZE - (version.length() + banner.length())));
 

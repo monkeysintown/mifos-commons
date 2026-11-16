@@ -41,6 +41,7 @@ final class TransactionTemplateBoundaryResolver implements BoundaryResolver {
         definitions.put("requires-new", props(REQUIRES_NEW, false));
         definitions.put("read-only", props(REQUIRED, true));
         definitions.putAll(properties.boundaries());
+
         this.primary = primary;
         this.beanFactory = beanFactory;
     }
@@ -48,32 +49,38 @@ final class TransactionTemplateBoundaryResolver implements BoundaryResolver {
     @Override
     public Optional<Boundary> resolve(String name) {
         var definition = definitions.get(name);
+
         if (definition == null) {
             return Optional.empty();
         }
+
         return Optional.of(cache.computeIfAbsent(name, n -> boundary(template(definition))));
     }
 
     private TransactionTemplate template(MifosFlowProperties.BoundaryProperties definition) {
-        PlatformTransactionManager manager = definition.transactionManager() == null
+        var manager = definition.transactionManager() == null
                         || definition.transactionManager().isBlank()
                 ? primary.getObject()
                 : beanFactory.getBean(definition.transactionManager(), PlatformTransactionManager.class);
+
+        int propagation = switch (definition.propagation()) {
+            case REQUIRED -> TransactionDefinition.PROPAGATION_REQUIRED;
+            case REQUIRES_NEW -> TransactionDefinition.PROPAGATION_REQUIRES_NEW;
+            case MANDATORY -> TransactionDefinition.PROPAGATION_MANDATORY;
+            case SUPPORTS -> TransactionDefinition.PROPAGATION_SUPPORTS;
+            case NOT_SUPPORTED -> TransactionDefinition.PROPAGATION_NOT_SUPPORTED;
+            case NEVER -> TransactionDefinition.PROPAGATION_NEVER;
+            case NESTED -> TransactionDefinition.PROPAGATION_NESTED;
+        };
+
         var template = new TransactionTemplate(manager);
-        template.setPropagationBehavior(
-                switch (definition.propagation()) {
-                    case REQUIRED -> TransactionDefinition.PROPAGATION_REQUIRED;
-                    case REQUIRES_NEW -> TransactionDefinition.PROPAGATION_REQUIRES_NEW;
-                    case MANDATORY -> TransactionDefinition.PROPAGATION_MANDATORY;
-                    case SUPPORTS -> TransactionDefinition.PROPAGATION_SUPPORTS;
-                    case NOT_SUPPORTED -> TransactionDefinition.PROPAGATION_NOT_SUPPORTED;
-                    case NEVER -> TransactionDefinition.PROPAGATION_NEVER;
-                    case NESTED -> TransactionDefinition.PROPAGATION_NESTED;
-                });
+        template.setPropagationBehavior(propagation);
         template.setReadOnly(definition.readOnly());
+
         if (definition.timeout() != null) {
             template.setTimeout((int) definition.timeout().toSeconds());
         }
+
         return template;
     }
 

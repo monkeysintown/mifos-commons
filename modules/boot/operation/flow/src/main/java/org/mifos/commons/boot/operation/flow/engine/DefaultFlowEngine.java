@@ -10,6 +10,7 @@ import static org.mifos.commons.boot.core.model.MifosErrorCategory.INTERNAL;
 import static org.mifos.commons.boot.operation.flow.exception.MifosFlowException.MifosFlowErrorCode.MIFOS_COMMONS_ERROR_FLOW_DEFINITION;
 import static org.mifos.commons.boot.operation.flow.exception.MifosFlowException.MifosFlowErrorCode.MIFOS_COMMONS_ERROR_FLOW_ITERATION_LIMIT;
 
+import com.google.errorprone.annotations.Var;
 import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -112,7 +113,7 @@ public final class DefaultFlowEngine implements MifosFlow.Engine {
 
     private <C extends MifosFlowContext> MifosFlow<C> compile(MifosFlow.Definition<C> definition, Scope scope) {
         return switch (definition) {
-            case Noop<C> noop -> ctx -> ctx;
+            case Noop<C> _ -> ctx -> ctx;
             case Act<C> act -> {
                 var fn = act.fn();
                 yield fn::apply;
@@ -183,7 +184,7 @@ public final class DefaultFlowEngine implements MifosFlow.Engine {
         }
 
         return ctx -> {
-            C current = ctx;
+            @Var C current = ctx;
 
             for (MifosFlow<C> step : steps) {
                 current = step.run(current);
@@ -200,13 +201,13 @@ public final class DefaultFlowEngine implements MifosFlow.Engine {
         var body = compile(repeat.body(), inner);
 
         return ctx -> {
-            C current = ctx;
-            int iterations = 0;
+            @Var C current = ctx;
+            @Var int iterations = 0;
 
             while (condition.test(current)) {
                 if (iterations++ == max) {
                     throw new MifosFlowException(MifosError.of(
-                            INTERNAL, MIFOS_COMMONS_ERROR_FLOW_ITERATION_LIMIT, List.of(inner.path(), max)));
+                            MIFOS_COMMONS_ERROR_FLOW_ITERATION_LIMIT, INTERNAL, List.of(inner.path(), max)));
                 }
 
                 current = body.run(current);
@@ -222,7 +223,7 @@ public final class DefaultFlowEngine implements MifosFlow.Engine {
         var body = compile(forEach.body(), scope.enter("forEach"));
 
         return ctx -> {
-            C current = ctx;
+            @Var C current = ctx;
 
             for (I item : items.apply(ctx)) {
                 current = body.run(enter.apply(current, item));
@@ -259,7 +260,7 @@ public final class DefaultFlowEngine implements MifosFlow.Engine {
 
         if (scope.insideBoundary()) {
             throw new MifosFlowException(MifosError.of(
-                    INTERNAL, MIFOS_COMMONS_ERROR_FLOW_DEFINITION, List.of(inner.path(), scope.boundary())));
+                    MIFOS_COMMONS_ERROR_FLOW_DEFINITION, INTERNAL, List.of(inner.path(), scope.boundary())));
         }
 
         var policy = resolveRetryPolicy(retry.policy(), inner);
@@ -319,7 +320,7 @@ public final class DefaultFlowEngine implements MifosFlow.Engine {
 
         return ctx -> {
             var completed = new ArrayDeque<Undo<C>>();
-            var current = ctx;
+            @Var var current = ctx;
 
             for (int i = 0; i < actions.size(); i++) {
                 try {
@@ -353,7 +354,7 @@ public final class DefaultFlowEngine implements MifosFlow.Engine {
 
         if (scope.insideBoundary()) {
             throw new MifosFlowException(MifosError.of(
-                    INTERNAL, MIFOS_COMMONS_ERROR_FLOW_DEFINITION, List.of(inner.path(), scope.boundary())));
+                    MIFOS_COMMONS_ERROR_FLOW_DEFINITION, INTERNAL, List.of(inner.path(), scope.boundary())));
         }
 
         var executor = resolveExecutor(forkJoin.executor(), inner);
@@ -401,7 +402,7 @@ public final class DefaultFlowEngine implements MifosFlow.Engine {
                 throw e;
             }
 
-            var merged = ctx;
+            @Var var merged = ctx;
 
             for (var result : results) {
                 merged = merge.apply(merged, result);
@@ -412,10 +413,10 @@ public final class DefaultFlowEngine implements MifosFlow.Engine {
     }
 
     private <C extends MifosFlowContext> MifosFlow<C> intercepted(MifosFlow.Node node, MifosFlow<C> flow) {
-        var result = flow;
+        @Var var result = flow;
 
         for (var interceptor : interceptors.reversed()) {
-            final var next = result;
+            var next = result;
             result = ctx -> interceptor.intercept(node, ctx, next);
         }
 
@@ -442,13 +443,13 @@ public final class DefaultFlowEngine implements MifosFlow.Engine {
         return usecaseResolver
                 .resolve(type)
                 .orElseThrow(() -> new MifosFlowException(MifosError.of(
-                        INTERNAL, MIFOS_COMMONS_ERROR_FLOW_DEFINITION, List.of(scope.path(), type.getName()))));
+                        MIFOS_COMMONS_ERROR_FLOW_DEFINITION, INTERNAL, List.of(scope.path(), type.getName()))));
     }
 
     private Boundary resolveBoundary(MifosFlow.BoundaryRef ref, Scope scope) {
         return switch (ref) {
-            case MifosFlow.BoundaryRef.Direct direct -> direct.boundary();
-            case MifosFlow.BoundaryRef.ByName byName ->
+            case MifosFlow.DirectBoundaryRef direct -> direct.boundary();
+            case MifosFlow.ByNameBoundaryRef byName ->
                 resolve(byName.name(), boundaries, boundaryResolver::resolve, "boundary", scope);
         };
     }
@@ -483,8 +484,8 @@ public final class DefaultFlowEngine implements MifosFlow.Engine {
 
         return fallback.apply(name)
                 .orElseThrow(() -> new MifosFlowException(MifosError.of(
-                        INTERNAL,
                         MIFOS_COMMONS_ERROR_FLOW_DEFINITION,
+                        INTERNAL,
                         List.of(scope.path(), scope.path(), "no " + what + " named '" + name + "'"))));
     }
 
@@ -575,7 +576,7 @@ public final class DefaultFlowEngine implements MifosFlow.Engine {
         /// @param ref the named reference
         /// @param boundary the boundary
         /// @return this builder
-        public Builder boundary(MifosFlow.BoundaryRef.ByName ref, Boundary boundary) {
+        public Builder boundary(MifosFlow.ByNameBoundaryRef ref, Boundary boundary) {
             return boundary(ref.name(), boundary);
         }
 

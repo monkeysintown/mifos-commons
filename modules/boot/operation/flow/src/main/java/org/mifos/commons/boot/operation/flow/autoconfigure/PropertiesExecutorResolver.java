@@ -22,7 +22,6 @@ import org.springframework.core.task.TaskDecorator;
 /// the auto-configuration passes a `ContextPropagatingTaskDecorator`, so MDC, tracing and security context reach
 /// the forks.
 final class PropertiesExecutorResolver implements ExecutorResolver, DisposableBean {
-    private static final String EXECUTOR_PREFIX = "mifos-flow-%s-";
     private final Map<String, MifosFlowProperties.ExecutorProperties> definitions = new HashMap<>();
     private final TaskDecorator decorator;
     private final Map<String, SimpleAsyncTaskExecutor> executors = new ConcurrentHashMap<>();
@@ -30,26 +29,31 @@ final class PropertiesExecutorResolver implements ExecutorResolver, DisposableBe
     public PropertiesExecutorResolver(MifosFlowProperties properties, TaskDecorator decorator) {
         definitions.put("default", new MifosFlowProperties.ExecutorProperties(true, -1));
         definitions.putAll(properties.executors());
+
         this.decorator = decorator;
     }
 
     @Override
     public Optional<Executor> resolve(String name) {
         var definition = definitions.get(name);
+
         if (definition == null) {
             return Optional.empty();
         }
+
         return Optional.of(executors.computeIfAbsent(name, n -> create(n, definition)));
     }
 
     private SimpleAsyncTaskExecutor create(String name, MifosFlowProperties.ExecutorProperties definition) {
-        var executor = new SimpleAsyncTaskExecutor(EXECUTOR_PREFIX.formatted(name));
+        var executor = new SimpleAsyncTaskExecutor("mifos-flow-%s-".formatted(name));
         executor.setVirtualThreads(definition.virtualThreads());
         executor.setConcurrencyLimit(definition.concurrencyLimit());
         executor.setTaskTerminationTimeout(10_000); // lets close() wait for running forks on shutdown
+
         if (decorator != null) {
             executor.setTaskDecorator(decorator);
         }
+
         return executor;
     }
 

@@ -15,15 +15,15 @@ public interface Renderer {
     /// @return the rendered definition
     default String render(MifosFlow.Definition<?> definition) {
         if (definition instanceof MifosFlow.Definition.Named<?>(String name, MifosFlow.Definition<?> body)) {
-            return render(name, body);
+            return render(body, name);
         }
-        return render(null, definition);
+        return render(definition, null);
     }
 
     /// Renders `definition` with the given title (`null` for none).
     ///
-    /// @param title the title, or `null` for none
     /// @param definition the definition to render
+    /// @param title the title, or `null` for none
     /// @return the rendered definition
-    String render(String title, MifosFlow.Definition<?> definition);
+    String render(MifosFlow.Definition<?> definition, String title);
 }

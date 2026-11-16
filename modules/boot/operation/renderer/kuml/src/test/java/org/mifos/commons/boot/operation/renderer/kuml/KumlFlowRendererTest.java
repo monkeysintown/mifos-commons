@@ -19,7 +19,7 @@ final class KumlFlowRendererTest {
         var renderer = new KumlFlowRenderer();
 
         // TODO: fix this
-        var svg = renderer.render("Test", null);
+        var svg = renderer.render(null, "Test");
 
         assertNotNull(svg);
 

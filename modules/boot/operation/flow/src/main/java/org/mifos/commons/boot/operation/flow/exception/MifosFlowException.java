@@ -28,9 +28,9 @@ public final class MifosFlowException extends MifosBaseException {
         super(error);
     }
 
+    /// Error codes of the flow module.
     @Getter
     @RequiredArgsConstructor
-    /// Error codes of the flow module.
     public enum MifosFlowErrorCode implements MifosErrorCode {
         /// An unspecified flow error.
         MIFOS_COMMONS_ERROR_FLOW_UNKNOWN(

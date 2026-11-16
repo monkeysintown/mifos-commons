@@ -50,23 +50,23 @@ public interface MifosFlow<C extends MifosFlow.MifosFlowContext> {
     /// `TransactionTemplate`s with the matching propagation.
     sealed interface BoundaryRef {
         /// No boundary. Unlike every other boundary, this one does not count as "inside a boundary" for validation.
-        BoundaryRef NONE = new Direct(Boundary.NONE);
+        BoundaryRef NONE = new DirectBoundaryRef(Boundary.NONE);
 
         /// Joins the current unit of work or starts a new one (`required`).
-        BoundaryRef REQUIRED = new ByName("required");
+        BoundaryRef REQUIRED = new ByNameBoundaryRef("required");
 
         /// Always starts a new unit of work, suspending the current one (`requires-new`).
-        BoundaryRef REQUIRES_NEW = new ByName("requires-new");
+        BoundaryRef REQUIRES_NEW = new ByNameBoundaryRef("requires-new");
 
         /// A read-only unit of work (`read-only`).
-        BoundaryRef READ_ONLY = new ByName("read-only");
+        BoundaryRef READ_ONLY = new ByNameBoundaryRef("read-only");
 
         /// References a boundary by name.
         ///
         /// @param name the boundary name
         /// @return the reference
         static BoundaryRef of(String name) {
-            return new ByName(name);
+            return new ByNameBoundaryRef(name);
         }
 
         /// References a boundary given directly.
@@ -74,49 +74,62 @@ public interface MifosFlow<C extends MifosFlow.MifosFlowContext> {
         /// @param boundary the boundary
         /// @return the reference
         static BoundaryRef of(Boundary boundary) {
-            return new Direct(boundary);
+            return new DirectBoundaryRef(boundary);
         }
 
         /// Whether this is [#NONE]. Decided by the reference alone, so validation never depends on how the engine
         /// resolves names: a definition that is invalid in production is also invalid in a test.
         ///
+        /// Abstract rather than a default method: an interface with default methods is initialized together
+        /// with
+        /// its implementations, which could deadlock with the constants above (Error Prone
+        /// `ClassInitializationDeadlock`).
+        ///
         /// @return `true` if this reference means "no boundary"
-        default boolean isNone() {
-            return this instanceof Direct(Boundary boundary) && boundary == Boundary.NONE;
+        boolean isNone();
+    }
+
+    /// A boundary referenced by name, resolved by the [Engine].
+    ///
+    /// @param name the boundary name
+    record ByNameBoundaryRef(String name) implements BoundaryRef {
+        /// Creates a reference.
+        ///
+        /// @param name the boundary name; not `null`
+        public ByNameBoundaryRef {
+            requireNonNull(name, "name");
         }
 
-        /// A boundary referenced by name, resolved by the [Engine].
-        ///
-        /// @param name the boundary name
-        record ByName(String name) implements BoundaryRef {
-            /// Creates a reference.
-            ///
-            /// @param name the boundary name; not `null`
-            public ByName {
-                requireNonNull(name, "name");
-            }
-
-            @Override
-            @NonNull public String toString() {
-                return name;
-            }
+        @Override
+        public boolean isNone() {
+            return false;
         }
 
-        /// A boundary given directly.
-        ///
-        /// @param boundary the boundary
-        record Direct(Boundary boundary) implements BoundaryRef {
-            /// Creates a reference.
-            ///
-            /// @param boundary the boundary; not `null`
-            public Direct {
-                requireNonNull(boundary, "boundary");
-            }
+        @Override
+        @NonNull public String toString() {
+            return name;
+        }
+    }
 
-            @Override
-            @NonNull public String toString() {
-                return boundary == Boundary.NONE ? "none" : "direct";
-            }
+    /// A boundary given directly.
+    ///
+    /// @param boundary the boundary
+    record DirectBoundaryRef(Boundary boundary) implements BoundaryRef {
+        /// Creates a reference.
+        ///
+        /// @param boundary the boundary; not `null`
+        public DirectBoundaryRef {
+            requireNonNull(boundary, "boundary");
+        }
+
+        @Override
+        public boolean isNone() {
+            return Boundary.NONE.equals(boundary);
+        }
+
+        @Override
+        @NonNull public String toString() {
+            return isNone() ? "none" : "direct";
         }
     }
 
@@ -271,6 +284,7 @@ public interface MifosFlow<C extends MifosFlow.MifosFlowContext> {
         ///
         /// @param <C> the context type
         /// @param steps the steps, copied into an immutable list
+        @SuppressWarnings("Var")
         record Sequence<C extends MifosFlowContext>(List<Definition<C>> steps) implements Definition<C> {
             /// Creates the node.
             ///
@@ -386,6 +400,7 @@ public interface MifosFlow<C extends MifosFlow.MifosFlowContext> {
         /// @param forks the parallel parts, copied into an immutable list
         /// @param merge combines two results
         /// @param executor the executor the forks run on
+        @SuppressWarnings("Var")
         record ForkJoin<C extends MifosFlowContext>(
                 Function<? super C, ? extends C> snapshot,
                 List<Definition<C>> forks,
@@ -469,6 +484,7 @@ public interface MifosFlow<C extends MifosFlow.MifosFlowContext> {
         ///
         /// @param <C> the context type
         /// @param steps the actions with their undo steps, copied into an immutable list
+        @SuppressWarnings("Var")
         record Saga<C extends MifosFlowContext>(List<Definition.Compensable<C>> steps) implements Definition<C> {
             /// Creates the node.
             ///
@@ -723,7 +739,7 @@ public interface MifosFlow<C extends MifosFlow.MifosFlowContext> {
                 return Duration.ZERO;
             }
             double base = initialBackoff.toNanos() * Math.pow(multiplier, failedAttempt - 1.0);
-            double capped = Math.min(base, maxBackoff.toNanos());
+            double capped = Math.min(base, (double) maxBackoff.toNanos());
             double factor = 1.0 - jitter * random.nextDouble();
             return Duration.ofNanos((long) (capped * factor));
         }
@@ -831,6 +847,7 @@ public interface MifosFlow<C extends MifosFlow.MifosFlowContext> {
     ///                 .retryOn(RetryRef.CONFLICT))
     ///         .named("transfer");
     /// ```
+    @SuppressWarnings("UnescapedEntity") // Error Prone reads the Markdown code block above as HTML
     final class Dsl {
         private Dsl() {}
 

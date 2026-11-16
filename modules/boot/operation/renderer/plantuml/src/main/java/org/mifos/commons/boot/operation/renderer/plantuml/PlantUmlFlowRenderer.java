@@ -5,7 +5,9 @@
 ///
 package org.mifos.commons.boot.operation.renderer.plantuml;
 
+import com.google.errorprone.annotations.Var;
 import java.util.List;
+import java.util.Locale;
 import org.mifos.commons.boot.operation.flow.MifosFlow;
 import org.mifos.commons.boot.operation.flow.spi.Renderer;
 
@@ -38,7 +40,7 @@ public final class PlantUmlFlowRenderer implements Renderer {
     static final String SUBFLOW_COLOR = "#F1F8E9";
 
     @Override
-    public String render(String title, MifosFlow.Definition<?> definition) {
+    public String render(MifosFlow.Definition<?> definition, String title) {
         var builder = new Builder();
         builder.line("@startuml");
 
@@ -64,13 +66,13 @@ public final class PlantUmlFlowRenderer implements Renderer {
         /// `null`
         private void node(MifosFlow.Definition<?> definition, String name) {
             switch (definition) {
-                case MifosFlow.Definition.Noop<?> noop -> {
+                case MifosFlow.Definition.Noop<?> _ -> {
                     if (name != null) {
                         action(name);
                     }
                 }
-                case MifosFlow.Definition.Act<?> act -> action(name != null ? name : "act");
-                case MifosFlow.Definition.Tap<?> tap -> line(":" + text(name != null ? name : "side effect") + ">");
+                case MifosFlow.Definition.Act<?> _ -> action(name != null ? name : "act");
+                case MifosFlow.Definition.Tap<?> _ -> line(":" + text(name != null ? name : "side effect") + ">");
                 case MifosFlow.Definition.Step<?, ?, ?> step ->
                     action(name != null ? name : step.usecase().name());
                 case MifosFlow.Definition.Check<?, ?> check ->
@@ -172,7 +174,7 @@ public final class PlantUmlFlowRenderer implements Renderer {
 
         // --- helpers ---
 
-        private boolean isSingleAction(MifosFlow.Definition<?> definition) {
+        private static boolean isSingleAction(MifosFlow.Definition<?> definition) {
             return definition instanceof MifosFlow.Definition.Act<?>
                     || definition instanceof MifosFlow.Definition.Tap<?>
                     || definition instanceof MifosFlow.Definition.Step<?, ?, ?>
@@ -186,23 +188,24 @@ public final class PlantUmlFlowRenderer implements Renderer {
                 case MifosFlow.Definition.Named<?> named -> named.name();
                 case MifosFlow.Definition.Step<?, ?, ?> step -> step.usecase().name();
                 case MifosFlow.Definition.Check<?, ?> check -> check.usecase().name();
-                case MifosFlow.Definition.Act<?> act -> "act";
-                case MifosFlow.Definition.Tap<?> tap -> "side effect";
-                case MifosFlow.Definition.Noop<?> noop -> "nothing";
+                case MifosFlow.Definition.Act<?> _ -> "act";
+                case MifosFlow.Definition.Tap<?> _ -> "side effect";
+                case MifosFlow.Definition.Noop<?> _ -> "nothing";
                 case MifosFlow.Definition.Sequence<?> sequence ->
                     sequence.steps().stream()
                             .map(this::summary)
                             .reduce((a, b) -> a + ", then " + b)
                             .orElse("nothing");
                 case MifosFlow.Definition.Within<?> within -> summary(within.body());
-                default -> definition.getClass().getSimpleName().toLowerCase();
+                default -> definition.getClass().getSimpleName().toLowerCase(Locale.ROOT);
             };
         }
 
         /// Text for an action: multi-line text uses PlantUML's `\n`; a trailing `;` or shape character would end the
         /// action early, so it is followed by a zero-width space.
+        @SuppressWarnings("MethodCanBeStatic")
         private String text(String label) {
-            var s = label.replace("\r", "").replace("\n", "\\n");
+            @Var var s = label.replace("\r", "").replace("\n", "\\n");
 
             if (s.endsWith(";")
                     || s.endsWith(">")

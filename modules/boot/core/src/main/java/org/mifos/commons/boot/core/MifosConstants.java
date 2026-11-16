@@ -18,7 +18,7 @@ import lombok.experimental.UtilityClass;
 /// @since 1.0.0
 /// @author <a href="https://github.com/vidakovic" target="_blank">Aleksandar Vidakovic</a>
 /// @see java.util.ResourceBundle
-/// @see UtilityClass
+/// @see lombok.experimental.UtilityClass
 @UtilityClass
 public class MifosConstants {
     /// Base Java package of all Mifos projects.

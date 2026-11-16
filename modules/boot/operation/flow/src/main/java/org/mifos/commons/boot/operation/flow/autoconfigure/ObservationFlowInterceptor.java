@@ -22,7 +22,6 @@ final class ObservationFlowInterceptor implements Interceptor {
     private static final String OBSERVATION_KIND = OBSERVATION_NAME + ".kind";
     private static final String OBSERVATION_PATH = OBSERVATION_NAME + ".path";
     private static final String OBSERVATION_RETRY = OBSERVATION_NAME + ".retry";
-    private static final String OBSERVATION_CONTEXTUAL_NAME = "retry %d of %s after %s";
 
     private final ObservationRegistry registry;
 
@@ -42,12 +41,14 @@ final class ObservationFlowInterceptor implements Interceptor {
 
     @Override
     public void onRetry(Node node, int failedAttempt, RuntimeException cause, Duration delay) {
-        Observation current = registry.getCurrentObservation();
+        var current = registry.getCurrentObservation();
+
         if (current != null) {
             current.event(Observation.Event.of(
                     OBSERVATION_RETRY,
-                    OBSERVATION_CONTEXTUAL_NAME.formatted(
-                            failedAttempt, node.path(), cause.getClass().getSimpleName())));
+                    "retry %d of %s after %s"
+                            .formatted(
+                                    failedAttempt, node.path(), cause.getClass().getSimpleName())));
         }
     }
 }
