@@ -28,5 +28,6 @@ public class MifosContextRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         // TODO: implement this!
+        filterChain.doFilter(request, response);
     }
 }
