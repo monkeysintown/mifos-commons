@@ -6,7 +6,7 @@
 package org.mifos.commons.boot.operation.flow.autoconfigure;
 
 import java.util.Optional;
-import org.mifos.commons.boot.operation.flow.spi.UsecaseResolver;
+import org.mifos.commons.boot.operation.core.usecase.UsecaseResolver;
 import org.springframework.beans.factory.BeanFactory;
 
 /// Resolves usecases referenced by type to the unique bean of that type.

@@ -6,13 +6,13 @@
 package org.mifos.commons.boot.operation.flow.autoconfigure;
 
 import io.micrometer.observation.ObservationRegistry;
+import org.mifos.commons.boot.operation.core.usecase.UsecaseResolver;
 import org.mifos.commons.boot.operation.flow.MifosFlow;
 import org.mifos.commons.boot.operation.flow.MifosFlowProperties;
 import org.mifos.commons.boot.operation.flow.engine.DefaultFlowEngine;
 import org.mifos.commons.boot.operation.flow.spi.BoundaryResolver;
 import org.mifos.commons.boot.operation.flow.spi.ExecutorResolver;
 import org.mifos.commons.boot.operation.flow.spi.RetryPolicyResolver;
-import org.mifos.commons.boot.operation.flow.spi.UsecaseResolver;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;

@@ -46,7 +46,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mifos.commons.boot.operation.flow.MifosFlow.BoundaryRef;
+import org.mifos.commons.boot.operation.core.usecase.UsecaseResolver;
 import org.mifos.commons.boot.operation.flow.MifosFlow.Definition;
 import org.mifos.commons.boot.operation.flow.MifosFlow.ExecutorRef;
 import org.mifos.commons.boot.operation.flow.MifosFlow.Interceptor;
@@ -57,8 +57,8 @@ import org.mifos.commons.boot.operation.flow.MifosFlow.RetryRef;
 import org.mifos.commons.boot.operation.flow.engine.DefaultFlowEngine;
 import org.mifos.commons.boot.operation.flow.exception.MifosFlowException;
 import org.mifos.commons.boot.operation.flow.spi.Boundary;
+import org.mifos.commons.boot.operation.flow.spi.BoundaryRef;
 import org.mifos.commons.boot.operation.flow.spi.RetryPolicyResolver;
-import org.mifos.commons.boot.operation.flow.spi.UsecaseResolver;
 
 @Slf4j
 @SuppressWarnings({"java:S5778", "java:S2925"})
@@ -82,11 +82,12 @@ final class DefaultFlowEngineTest {
 
     record Other(String text) implements MifosFlowContext {}
 
-    record Amount(int value) implements org.mifos.commons.boot.operation.usecase.MifosUsecase.MifosRequest {}
+    record Amount(int value) implements org.mifos.commons.boot.operation.core.usecase.MifosUsecase.MifosRequest {}
 
-    record Doubled(int value) implements org.mifos.commons.boot.operation.usecase.MifosUsecase.MifosResponse {}
+    record Doubled(int value) implements org.mifos.commons.boot.operation.core.usecase.MifosUsecase.MifosResponse {}
 
-    static final class DoubleAmount implements org.mifos.commons.boot.operation.usecase.MifosUsecase<Amount, Doubled> {
+    static final class DoubleAmount
+            implements org.mifos.commons.boot.operation.core.usecase.MifosUsecase<Amount, Doubled> {
         @Override
         public Doubled execute(Amount request) {
             return new Doubled(request.value() * 2);
@@ -94,7 +95,7 @@ final class DefaultFlowEngineTest {
     }
 
     static final class RequirePositive
-            implements org.mifos.commons.boot.operation.usecase.MifosUsecase<Amount, Doubled> {
+            implements org.mifos.commons.boot.operation.core.usecase.MifosUsecase<Amount, Doubled> {
         @Override
         public Doubled execute(Amount request) {
             if (request.value() <= 0) {

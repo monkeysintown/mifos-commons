@@ -3,34 +3,29 @@
 /// License, v. 2.0. If a copy of the MPL was not distributed with this
 /// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ///
-package org.mifos.commons.boot.operation.flow.spi;
+package org.mifos.commons.boot.operation.core.usecase;
 
 import java.util.Objects;
-import org.mifos.commons.boot.operation.usecase.MifosUsecase;
-import org.mifos.commons.boot.operation.usecase.MifosUsecase.MifosRequest;
-import org.mifos.commons.boot.operation.usecase.MifosUsecase.MifosResponse;
 
-/// A usecase, referenced by type (resolved by the
-/// [MifosFlow.Engine][org.mifos.commons.boot.operation.flow.MifosFlow.Engine], e.g. as a Spring bean) or given as
-/// an instance.
+/// A usecase, referenced by type (resolved by a [UsecaseResolver], e.g. as a Spring bean) or given as an instance.
 ///
-/// Referencing by type lets flow definitions be static constants that do not depend on Spring.
+/// Referencing by type lets definitions (flows, workflows) be static constants that do not depend on Spring.
 ///
 /// @param <REQ> the usecase request type
 /// @param <RES> the usecase response type
-public sealed interface UsecaseRef<REQ extends MifosRequest, RES extends MifosResponse> {
+public sealed interface UsecaseRef<REQ extends MifosUsecase.MifosRequest, RES extends MifosUsecase.MifosResponse> {
 
     /// A short, readable name, used for interceptors and error messages.
     ///
     /// @return the name
     String name();
 
-    /// A usecase referenced by type, resolved when the flow is bound.
+    /// A usecase referenced by type, resolved when the definition using it is bound.
     ///
     /// @param <REQ> the usecase request type
     /// @param <RES> the usecase response type
     /// @param type the usecase type
-    record ByType<REQ extends MifosRequest, RES extends MifosResponse>(
+    record ByType<REQ extends MifosUsecase.MifosRequest, RES extends MifosUsecase.MifosResponse>(
             Class<? extends MifosUsecase<? super REQ, ? extends RES>> type) implements UsecaseRef<REQ, RES> {
         /// Creates a reference.
         ///
@@ -50,8 +45,8 @@ public sealed interface UsecaseRef<REQ extends MifosRequest, RES extends MifosRe
     /// @param <REQ> the usecase request type
     /// @param <RES> the usecase response type
     /// @param usecase the usecase
-    record Direct<REQ extends MifosRequest, RES extends MifosResponse>(MifosUsecase<? super REQ, ? extends RES> usecase)
-            implements UsecaseRef<REQ, RES> {
+    record Direct<REQ extends MifosUsecase.MifosRequest, RES extends MifosUsecase.MifosResponse>(
+            MifosUsecase<? super REQ, ? extends RES> usecase) implements UsecaseRef<REQ, RES> {
         /// Creates a reference.
         ///
         /// @param usecase the usecase; not `null`

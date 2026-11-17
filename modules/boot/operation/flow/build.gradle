@@ -5,7 +5,7 @@ plugins {
 description = "Mifos Initiative - Commons - Operation - Flow"
 
 dependencies {
-    api project(":mifos-commons-boot-operation-usecase")
+    api project(":mifos-commons-boot-operation-core")
     compileOnly "org.springframework.boot:spring-boot-starter"
     compileOnly "org.springframework.boot:spring-boot-starter-data-jdbc"
     testImplementation "org.junit.jupiter:junit-jupiter-engine"
