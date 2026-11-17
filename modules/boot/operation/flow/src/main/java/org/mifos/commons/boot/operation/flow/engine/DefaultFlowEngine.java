@@ -26,6 +26,10 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 import org.mifos.commons.boot.core.exception.MifosError;
+import org.mifos.commons.boot.operation.core.usecase.MifosUsecase;
+import org.mifos.commons.boot.operation.core.usecase.MifosUsecase.MifosRequest;
+import org.mifos.commons.boot.operation.core.usecase.UsecaseRef;
+import org.mifos.commons.boot.operation.core.usecase.UsecaseResolver;
 import org.mifos.commons.boot.operation.flow.MifosFlow;
 import org.mifos.commons.boot.operation.flow.MifosFlow.Definition.Act;
 import org.mifos.commons.boot.operation.flow.MifosFlow.Definition.Check;
@@ -46,13 +50,10 @@ import org.mifos.commons.boot.operation.flow.MifosFlow.Definition.Within;
 import org.mifos.commons.boot.operation.flow.MifosFlow.MifosFlowContext;
 import org.mifos.commons.boot.operation.flow.exception.MifosFlowException;
 import org.mifos.commons.boot.operation.flow.spi.Boundary;
+import org.mifos.commons.boot.operation.flow.spi.BoundaryRef;
 import org.mifos.commons.boot.operation.flow.spi.BoundaryResolver;
 import org.mifos.commons.boot.operation.flow.spi.ExecutorResolver;
 import org.mifos.commons.boot.operation.flow.spi.RetryPolicyResolver;
-import org.mifos.commons.boot.operation.flow.spi.UsecaseRef;
-import org.mifos.commons.boot.operation.flow.spi.UsecaseResolver;
-import org.mifos.commons.boot.operation.usecase.MifosUsecase;
-import org.mifos.commons.boot.operation.usecase.MifosUsecase.MifosRequest;
 
 /// The standard [MifosFlow.Engine]: compiles a definition into nested closures, once, at bind time.
 ///
@@ -61,7 +62,7 @@ import org.mifos.commons.boot.operation.usecase.MifosUsecase.MifosRequest;
 /// - no retry inside a boundary (the transaction would already be rollback-only when retrying);
 /// - no fork/join inside a boundary (forks run on other threads and would escape the transaction).
 ///
-/// Both rules are decided from the [MifosFlow.BoundaryRef] alone, never from how it resolves, so a definition that is
+/// Both rules are decided from the [BoundaryRef] alone, never from how it resolves, so a definition that is
 /// invalid in production is also invalid in a test that resolves every boundary to [Boundary#NONE].
 public final class DefaultFlowEngine implements MifosFlow.Engine {
     private final Map<String, Boundary> boundaries;
@@ -446,10 +447,10 @@ public final class DefaultFlowEngine implements MifosFlow.Engine {
                         MIFOS_COMMONS_ERROR_FLOW_DEFINITION, INTERNAL, List.of(scope.path(), type.getName()))));
     }
 
-    private Boundary resolveBoundary(MifosFlow.BoundaryRef ref, Scope scope) {
+    private Boundary resolveBoundary(BoundaryRef ref, Scope scope) {
         return switch (ref) {
-            case MifosFlow.DirectBoundaryRef direct -> direct.boundary();
-            case MifosFlow.ByNameBoundaryRef byName ->
+            case BoundaryRef.DirectBoundaryRef direct -> direct.boundary();
+            case BoundaryRef.ByNameBoundaryRef byName ->
                 resolve(byName.name(), boundaries, boundaryResolver::resolve, "boundary", scope);
         };
     }
@@ -576,7 +577,7 @@ public final class DefaultFlowEngine implements MifosFlow.Engine {
         /// @param ref the named reference
         /// @param boundary the boundary
         /// @return this builder
-        public Builder boundary(MifosFlow.ByNameBoundaryRef ref, Boundary boundary) {
+        public Builder boundary(BoundaryRef.ByNameBoundaryRef ref, Boundary boundary) {
             return boundary(ref.name(), boundary);
         }
 
