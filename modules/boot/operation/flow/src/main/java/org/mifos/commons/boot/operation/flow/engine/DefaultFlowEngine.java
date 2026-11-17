@@ -6,7 +6,7 @@
 package org.mifos.commons.boot.operation.flow.engine;
 
 import static java.util.Objects.requireNonNull;
-import static org.mifos.commons.boot.core.model.MifosErrorCategory.INTERNAL;
+import static org.mifos.commons.boot.core.exception.MifosError.Category.INTERNAL;
 import static org.mifos.commons.boot.operation.flow.exception.MifosFlowException.MifosFlowErrorCode.MIFOS_COMMONS_ERROR_FLOW_DEFINITION;
 import static org.mifos.commons.boot.operation.flow.exception.MifosFlowException.MifosFlowErrorCode.MIFOS_COMMONS_ERROR_FLOW_ITERATION_LIMIT;
 
@@ -25,7 +25,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
-import org.mifos.commons.boot.core.model.MifosError;
+import org.mifos.commons.boot.core.exception.MifosError;
 import org.mifos.commons.boot.operation.flow.MifosFlow;
 import org.mifos.commons.boot.operation.flow.MifosFlow.Definition.Act;
 import org.mifos.commons.boot.operation.flow.MifosFlow.Definition.Check;

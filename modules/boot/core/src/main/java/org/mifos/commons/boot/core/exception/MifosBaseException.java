@@ -8,7 +8,6 @@ package org.mifos.commons.boot.core.exception;
 import java.io.Serial;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
-import org.mifos.commons.boot.core.model.MifosError;
 
 /// Abstract base class for all custom exceptions thrown by the Mifos system.
 ///

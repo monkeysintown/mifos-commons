@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
-import org.mifos.commons.boot.core.model.MifosError;
+import org.mifos.commons.boot.core.exception.MifosError;
 import org.mifos.commons.boot.operation.flow.MifosFlow.RetryPolicy;
 import org.mifos.commons.boot.operation.flow.MifosFlowProperties;
 import org.mifos.commons.boot.operation.flow.exception.MifosFlowException;

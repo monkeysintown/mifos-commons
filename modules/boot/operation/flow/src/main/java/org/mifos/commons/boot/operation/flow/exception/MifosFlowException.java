@@ -13,8 +13,7 @@ import java.io.Serial;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.mifos.commons.boot.core.exception.MifosBaseException;
-import org.mifos.commons.boot.core.model.MifosError;
-import org.mifos.commons.boot.core.model.MifosErrorCode;
+import org.mifos.commons.boot.core.exception.MifosError;
 
 /// Thrown for invalid flow definitions, unresolvable references, invalid configuration and exceeded loop limits.
 public final class MifosFlowException extends MifosBaseException {
@@ -31,7 +30,7 @@ public final class MifosFlowException extends MifosBaseException {
     /// Error codes of the flow module.
     @Getter
     @RequiredArgsConstructor
-    public enum MifosFlowErrorCode implements MifosErrorCode {
+    public enum MifosFlowErrorCode implements MifosError.Code {
         /// An unspecified flow error.
         MIFOS_COMMONS_ERROR_FLOW_UNKNOWN(
                 MIFOS_COMMONS_BOOT_ERROR_CODE_FLOW_START, MIFOS_COMMONS_BOOT_MESSAGE_ERROR_FLOW_PREFIX + ".unknown"),

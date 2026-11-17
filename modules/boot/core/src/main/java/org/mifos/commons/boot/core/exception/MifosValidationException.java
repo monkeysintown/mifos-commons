@@ -12,7 +12,6 @@ import static org.mifos.commons.boot.core.MifosCommonsBootConstants.MIFOS_COMMON
 import java.io.Serial;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.mifos.commons.boot.core.model.MifosErrorCode;
 import org.springframework.validation.Errors;
 
 /// Exception thrown when validation errors occur within the Mifos system.
@@ -40,7 +39,7 @@ public class MifosValidationException extends RuntimeException {
     /// Validation error codes.
     @Getter
     @RequiredArgsConstructor
-    public enum MifosValidationErrorCode implements MifosErrorCode {
+    public enum MifosValidationErrorCode implements MifosError.Code {
         /// An unknown validation error.
         MIFOS_COMMONS_ERROR_VALIDATION_UNKNOWN(
                 MIFOS_COMMONS_BOOT_ERROR_CODE_VALIDATION_START, MIFOS_COMMONS_BOOT_MESSAGE_ERROR_VALIDATION_PREFIX),

@@ -13,8 +13,7 @@ import java.io.Serial;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.mifos.commons.boot.core.exception.MifosBaseException;
-import org.mifos.commons.boot.core.model.MifosError;
-import org.mifos.commons.boot.core.model.MifosErrorCode;
+import org.mifos.commons.boot.core.exception.MifosError;
 
 /// Exception thrown by Mifos CLI components.
 public class MifosCliException extends MifosBaseException {
@@ -31,7 +30,7 @@ public class MifosCliException extends MifosBaseException {
     /// Error codes for CLI related failures.
     @Getter
     @RequiredArgsConstructor
-    public enum MifosCliErrorCode implements MifosErrorCode {
+    public enum MifosCliErrorCode implements MifosError.Code {
         /// Unknown CLI error.
         MIFOS_COMMONS_ERROR_CLI_UNKNOWN(
                 MIFOS_COMMONS_BOOT_ERROR_CODE_CLI_START, MIFOS_COMMONS_BOOT_MESSAGE_ERROR_CLI_PREFIX + ".unknown"),

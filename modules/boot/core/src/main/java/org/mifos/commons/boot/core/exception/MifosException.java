@@ -12,8 +12,6 @@ import static org.mifos.commons.boot.core.MifosCommonsBootConstants.MIFOS_COMMON
 import java.io.Serial;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.mifos.commons.boot.core.model.MifosError;
-import org.mifos.commons.boot.core.model.MifosErrorCode;
 
 /// General purpose Mifos exception carrying a structured [MifosError].
 ///
@@ -33,7 +31,7 @@ public class MifosException extends MifosBaseException {
     /// Common Mifos error codes.
     @Getter
     @RequiredArgsConstructor
-    public enum MifosCommonErrorCode implements MifosErrorCode {
+    public enum MifosCommonErrorCode implements MifosError.Code {
         /// An unknown or unexpected error.
         MIFOS_COMMONS_ERROR_UNKNOWN(
                 MIFOS_COMMONS_BOOT_ERROR_CODE_START, MIFOS_COMMONS_BOOT_MESSAGE_ERROR_PREFIX + ".unknown"),

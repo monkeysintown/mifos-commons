@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.mifos.commons.boot.core.MifosCommonsBootProperties;
 import org.mifos.commons.boot.core.exception.MifosBaseException;
 import org.mifos.commons.boot.core.exception.MifosValidationException;
-import org.mifos.commons.boot.core.model.MifosError;
+import org.mifos.commons.boot.core.exception.MifosError;
 import org.springframework.context.MessageSource;
 import org.springframework.core.io.buffer.DataBufferLimitException;
 import org.springframework.http.ProblemDetail;
