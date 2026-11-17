@@ -9,6 +9,12 @@ import org.mifos.commons.boot.operation.flow.MifosFlow;
 
 /// Renders a [MifosFlow.Definition] as text, e.g. as a diagram.
 public interface Renderer {
+    /// Title used when none is given.
+    String DEFAULT_TITLE = "Flow";
+
+    /// Default process ID.
+    String DEFAULT_PROCESS_ID = "flow";
+
     /// Renders `definition`; a top-level [MifosFlow.Definition.Named] supplies the title and is not rendered itself.
     ///
     /// @param definition the definition to render

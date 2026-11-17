@@ -141,8 +141,7 @@ public class MifosError implements Serializable {
     /// @param message a human-readable error message
     /// @param cause the underlying cause
     /// @return the error
-    public static MifosError of(
-            Code code, Category category, String field, String message, Throwable cause) {
+    public static MifosError of(Code code, Category category, String field, String message, Throwable cause) {
         return MifosError.builder()
                 .code(code)
                 .category(category)
