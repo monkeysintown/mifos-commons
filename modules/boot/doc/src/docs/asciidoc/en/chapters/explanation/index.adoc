@@ -1,0 +1,16 @@
+[#explanation]
+= Explanation
+
+The explanation gives the reasons for the design.
+It does not give procedures.
+Read it when you want to know why the libraries work as they do.
+
+include::architecture.adoc[leveloffset=+1]
+
+include::usecases-and-flows.adoc[leveloffset=+1]
+
+include::transactions-and-retries.adoc[leveloffset=+1]
+
+include::error-model.adoc[leveloffset=+1]
+
+include::imperative-and-reactive.adoc[leveloffset=+1]

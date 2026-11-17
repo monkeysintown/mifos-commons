@@ -52,8 +52,11 @@ import org.mifos.commons.boot.operation.flow.exception.MifosFlowException;
 import org.mifos.commons.boot.operation.flow.spi.Boundary;
 import org.mifos.commons.boot.operation.flow.spi.BoundaryRef;
 import org.mifos.commons.boot.operation.flow.spi.BoundaryResolver;
+import org.mifos.commons.boot.operation.flow.spi.ExecutorRef;
 import org.mifos.commons.boot.operation.flow.spi.ExecutorResolver;
 import org.mifos.commons.boot.operation.flow.spi.RetryPolicyResolver;
+import org.mifos.commons.boot.operation.flow.spi.RetryRef;
+import org.mifos.commons.boot.operation.flow.spi.Sleeper;
 
 /// The standard [MifosFlow.Engine]: compiles a definition into nested closures, once, at bind time.
 ///
@@ -74,7 +77,7 @@ public final class DefaultFlowEngine implements MifosFlow.Engine {
     private final Map<Class<?>, Object> usecases;
     private final UsecaseResolver usecaseResolver;
     private final List<MifosFlow.Interceptor> interceptors;
-    private final MifosFlow.Sleeper sleeper;
+    private final Sleeper sleeper;
 
     private DefaultFlowEngine(Builder builder) {
         this.boundaries = Map.copyOf(builder.boundaries);
@@ -89,7 +92,7 @@ public final class DefaultFlowEngine implements MifosFlow.Engine {
         this.sleeper = builder.sleeper;
     }
 
-    /// Creates a builder with no registered entries, resolvers that resolve nothing, and [MifosFlow.Sleeper#THREAD].
+    /// Creates a builder with no registered entries, resolvers that resolve nothing, and [Sleeper#THREAD].
     ///
     /// @return a new builder
     public static Builder builder() {
@@ -455,18 +458,18 @@ public final class DefaultFlowEngine implements MifosFlow.Engine {
         };
     }
 
-    private MifosFlow.RetryPolicy resolveRetryPolicy(MifosFlow.RetryRef ref, Scope scope) {
+    private MifosFlow.RetryPolicy resolveRetryPolicy(RetryRef ref, Scope scope) {
         return switch (ref) {
-            case MifosFlow.RetryRef.Direct direct -> direct.policy();
-            case MifosFlow.RetryRef.ByName byName ->
+            case RetryRef.Direct direct -> direct.policy();
+            case RetryRef.ByName byName ->
                 resolve(byName.name(), retryPolicies, retryPolicyResolver::resolve, "retry policy", scope);
         };
     }
 
-    private Executor resolveExecutor(MifosFlow.ExecutorRef ref, Scope scope) {
+    private Executor resolveExecutor(ExecutorRef ref, Scope scope) {
         return switch (ref) {
-            case MifosFlow.ExecutorRef.Direct direct -> direct.executor();
-            case MifosFlow.ExecutorRef.ByName byName ->
+            case ExecutorRef.Direct direct -> direct.executor();
+            case ExecutorRef.ByName byName ->
                 resolve(byName.name(), executors, executorResolver::resolve, "executor", scope);
         };
     }
@@ -558,7 +561,7 @@ public final class DefaultFlowEngine implements MifosFlow.Engine {
             }
         };
         private final List<MifosFlow.Interceptor> interceptors = new ArrayList<>();
-        private MifosFlow.Sleeper sleeper = MifosFlow.Sleeper.THREAD;
+        private Sleeper sleeper = Sleeper.THREAD;
 
         private Builder() {}
 
@@ -612,7 +615,7 @@ public final class DefaultFlowEngine implements MifosFlow.Engine {
         /// @param ref the named reference
         /// @param policy the policy
         /// @return this builder
-        public Builder retryPolicy(MifosFlow.RetryRef.ByName ref, MifosFlow.RetryPolicy policy) {
+        public Builder retryPolicy(RetryRef.ByName ref, MifosFlow.RetryPolicy policy) {
             return retryPolicy(ref.name(), policy);
         }
 
@@ -640,7 +643,7 @@ public final class DefaultFlowEngine implements MifosFlow.Engine {
         /// @param ref the named reference
         /// @param executor the executor
         /// @return this builder
-        public Builder executor(MifosFlow.ExecutorRef.ByName ref, Executor executor) {
+        public Builder executor(ExecutorRef.ByName ref, Executor executor) {
             return executor(ref.name(), executor);
         }
 
@@ -686,7 +689,7 @@ public final class DefaultFlowEngine implements MifosFlow.Engine {
         ///
         /// @param sleeper the sleeper
         /// @return this builder
-        public Builder sleeper(MifosFlow.Sleeper sleeper) {
+        public Builder sleeper(Sleeper sleeper) {
             this.sleeper = requireNonNull(sleeper);
             return this;
         }

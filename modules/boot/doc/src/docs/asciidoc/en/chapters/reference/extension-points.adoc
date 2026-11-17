@@ -1,0 +1,69 @@
+[#reference-extension-points]
+= Extension points
+
+[cols="2,2,4"]
+|===
+| Interface | Module | Purpose
+
+| `MifosUsecase<REQ, RES>`
+| operation-core
+| One unit of business logic. `RES execute(REQ request)`. Requests implement `MifosRequest`, responses implement `MifosResponse`.
+
+| `UsecaseResolver`
+| operation-core
+| Finds a usecase by its type. The starter uses the unique Spring bean of the type.
+
+| `MifosFlow.Engine`
+| operation-flow
+| Binds definitions. The default is `DefaultFlowEngine`.
+
+| `MifosFlow.Interceptor`
+| operation-flow
+| Runs around each step, check and named part (`intercept`). Receives each retry (`onRetry`).
+
+| `Boundary`
+| operation-flow
+| Runs work in a unit of work, usually a transaction. `Boundary.NONE` runs the work directly.
+
+| `BoundaryResolver`
+| operation-flow
+| Finds a boundary by its name.
+
+| `RetryPolicyResolver`
+| operation-flow
+| Finds a retry policy by its name.
+
+| `ExecutorResolver`
+| operation-flow
+| Finds an executor by its name.
+
+| `RendererType`
+| operation-flow
+| Changes a definition into text, for example a diagram.
+
+| `EngineCustomizer`
+| operation-starter
+| Changes the engine builder before the starter makes the engine.
+
+| `MifosError.Code`
+| core
+| An error code with a number and a message key.
+|===
+
+== Beans of the operation starter
+
+All beans have `@ConditionalOnMissingBean`.
+If you make a bean of the same type, the starter does not make its bean.
+
+[cols="2,2,3"]
+|===
+| Bean type | Bean name | Default
+
+| `UsecaseResolver` | `mifosFlowUsecaseResolver` | The unique bean of the usecase type.
+| `BoundaryResolver` | `mifosFlowBoundaryResolver` | A `TransactionTemplate` for each boundary in `mifos.operation.flow.boundaries`.
+| `RetryPolicyResolver` | `mifosFlowRetryPolicyResolver` | The policies in `mifos.operation.flow.retry`.
+| `ExecutorResolver` | `mifosFlowExecutorResolver` | A `SimpleAsyncTaskExecutor` for each executor in `mifos.operation.flow.executors`.
+| `MifosFlow.Engine` | `mifosFlowEngine` | `DefaultFlowEngine` with the resolvers, interceptors and customizers.
+| `TaskDecorator` | `mifosFlowTaskDecorator` | Copies the context (MDC, tracing, security) to parallel parts. Only with Micrometer context propagation.
+| `ObservationFlowInterceptor` | `mifosFlowObservationInterceptor` | Records observations. Only with an `ObservationRegistry` bean.
+|===

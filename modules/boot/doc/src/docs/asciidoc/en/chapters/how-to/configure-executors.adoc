@@ -1,0 +1,35 @@
+[#how-to-configure-executors]
+= Configure an executor for parallel steps
+
+`forkJoin` runs parts of a flow at the same time.
+An executor supplies the threads.
+The executor `default` is always available and uses virtual threads.
+
+. Select a name, for example `io`.
+. Add the executor to `application.yml`:
++
+[source,yaml]
+----
+mifos:
+  operation:
+    flow:
+      executors:
+        io:
+          virtual-threads: true
+          concurrency-limit: 32
+----
+. Refer to the name in the flow:
++
+[source,java]
+----
+forkJoin(c -> c, List.of(scoreRisk, checkLimits), (a, b) -> b, ExecutorRef.of("io"))
+----
+
+`concurrency-limit` is the maximum number of parts that run at the same time.
+The value `-1` means no limit.
+
+Micrometer context propagation can be on the classpath.
+Then the parallel parts get the logging context (MDC), the tracing context and the security context of the caller.
+
+CAUTION: Do not put `forkJoin` in a boundary.
+The parallel parts run on different threads, thus they are not in the transaction.

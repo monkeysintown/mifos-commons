@@ -48,17 +48,17 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mifos.commons.boot.operation.core.usecase.UsecaseResolver;
 import org.mifos.commons.boot.operation.flow.MifosFlow.Definition;
-import org.mifos.commons.boot.operation.flow.MifosFlow.ExecutorRef;
 import org.mifos.commons.boot.operation.flow.MifosFlow.Interceptor;
 import org.mifos.commons.boot.operation.flow.MifosFlow.MifosFlowContext;
 import org.mifos.commons.boot.operation.flow.MifosFlow.Placement;
 import org.mifos.commons.boot.operation.flow.MifosFlow.RetryPolicy;
-import org.mifos.commons.boot.operation.flow.MifosFlow.RetryRef;
 import org.mifos.commons.boot.operation.flow.engine.DefaultFlowEngine;
 import org.mifos.commons.boot.operation.flow.exception.MifosFlowException;
 import org.mifos.commons.boot.operation.flow.spi.Boundary;
 import org.mifos.commons.boot.operation.flow.spi.BoundaryRef;
+import org.mifos.commons.boot.operation.flow.spi.ExecutorRef;
 import org.mifos.commons.boot.operation.flow.spi.RetryPolicyResolver;
+import org.mifos.commons.boot.operation.flow.spi.RetryRef;
 
 @Slf4j
 @SuppressWarnings({"java:S5778", "java:S2925"})

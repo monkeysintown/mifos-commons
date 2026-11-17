@@ -9,7 +9,8 @@ import static java.util.Objects.requireNonNull;
 
 import org.jspecify.annotations.NonNull;
 
-/// Where a flow's unit of work starts and ends, referenced by name (resolved by the [MifosFlow.Engine]) or given
+/// Where a flow's unit of work starts and ends, referenced by name (resolved by the
+/// [org.mifos.commons.boot.operation.flow.MifosFlow.Engine]) or given
 /// directly.
 ///
 /// Flow definitions use names so that they stay free of Spring; the starter maps the well-known names to
@@ -54,7 +55,7 @@ public sealed interface BoundaryRef {
     /// @return `true` if this reference means "no boundary"
     boolean isNone();
 
-    /// A boundary referenced by name, resolved by the [MifosFlow.Engine].
+    /// A boundary referenced by name, resolved by the [org.mifos.commons.boot.operation.flow.MifosFlow.Engine].
     ///
     /// @param name the boundary name
     record ByNameBoundaryRef(String name) implements BoundaryRef {

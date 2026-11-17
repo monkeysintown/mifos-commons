@@ -1,0 +1,54 @@
+[#explanation-usecases-and-flows]
+= Usecases and flows
+
+== Usecases
+
+A usecase is one unit of business logic, for example "post a journal entry".
+It has one method: `execute(request)` returns a response.
+
+A usecase does not know who calls it.
+It does not know about HTTP, transactions or retries.
+Thus it is easy to test and to use again.
+
+The request and the response are `Serializable`.
+Thus a usecase can also run in a different process, for example in a durable workflow engine.
+
+== Flows
+
+A business process has many usecases.
+The process must also control transactions, retries, parallel work and compensation.
+If you write this control in Java code, the code becomes long and difficult to read.
+The business steps are hidden between `try`, `catch`, futures and loops.
+
+A flow keeps the two concerns apart:
+
+* The definition tells what occurs: the steps, the sequence, the conditions and the boundaries.
+* The engine tells how it occurs: the transactions, the threads, the delays and the observations.
+
+== Flows are data
+
+A flow definition is a tree of Java records.
+It is not code that runs.
+This has these advantages:
+
+* The engine examines the full flow one time, when the application starts.
+Wrong references and wrong structures stop the start, not a request in production.
+* A renderer can make a diagram from the same definition.
+The diagram always agrees with the code.
+* A different engine can run the same definition, for example an engine for tests or a reactive engine.
+* A definition can be a constant.
+It does not need Spring or a database.
+
+== Binding
+
+`Engine.bind` changes a definition into a `MifosFlow`.
+The engine makes nested functions from the tree.
+When the flow runs, the engine does not read the tree again.
+Thus a flow is approximately as fast as the same logic written by hand.
+
+== The context
+
+Each step receives a context and returns a new context.
+Use a record for the context.
+A record cannot change.
+Thus parallel parts cannot change data of each other, and a retry always starts from the same data.

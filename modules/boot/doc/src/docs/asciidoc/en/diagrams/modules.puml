@@ -1,0 +1,70 @@
+@startuml
+left to right direction
+skinparam componentStyle rectangle
+
+component "core" as core
+component "application" as application
+component "mapping" as mapping
+component "debug" as debug
+
+package "persistence" {
+    component "relational-core" as pcore
+    component "relational-imperative" as pimp
+    component "relational-reactive" as preact
+}
+
+package "transport" {
+    component "rest-core" as rcore
+    component "rest-imperative" as rimp
+    component "rest-reactive" as rreact
+    component "grpc-*" as grpc
+    component "rsocket-*" as rsocket
+}
+
+package "operation" {
+    component "operation-core" as ocore
+    component "operation-flow" as flow
+    component "operation-starter" as ostarter
+    component "renderer-plantuml" as plantuml
+    component "renderer-kuml" as kuml
+}
+
+package "cli" {
+    component "cli-core" as clicore
+    component "cli-pico" as pico
+    component "cli-tamboui" as tamboui
+}
+
+package "starters" {
+    component "starter-imperative" as simp
+    component "starter-reactive" as sreact
+}
+
+application --> core
+debug --> core
+pcore --> core
+pimp --> pcore
+preact --> pcore
+rcore --> core
+rimp --> rcore
+rreact --> rcore
+grpc --> core
+rsocket --> core
+ocore --> core
+flow --> ocore
+ostarter --> flow
+plantuml --> flow
+kuml --> flow
+clicore --> core
+pico --> clicore
+tamboui --> clicore
+
+simp --> application
+simp --> mapping
+simp --> pimp
+simp --> rimp
+sreact --> application
+sreact --> mapping
+sreact --> preact
+sreact --> rreact
+@enduml

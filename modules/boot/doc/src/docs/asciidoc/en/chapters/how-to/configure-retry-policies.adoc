@@ -1,0 +1,62 @@
+[#how-to-configure-retry-policies]
+= Configure a retry policy
+
+A retry policy tells the engine when to try a part of a flow again.
+The policy `conflict` is always available.
+It tries 3 times if a different transaction changed the same data (`ConcurrencyFailureException`).
+
+== Add a retry policy
+
+. Select a name, for example `gateway-timeout`.
+. Add the policy to `application.yml`:
++
+[source,yaml]
+----
+mifos:
+  operation:
+    flow:
+      retry:
+        gateway-timeout:
+          max-attempts: 3
+          initial-backoff: 200ms
+          multiplier: 2.0
+          max-backoff: 2s
+          jitter: 0.5
+          retry-on:
+            - org.springframework.web.client.ResourceAccessException
+----
+. Refer to the name in the flow:
++
+[source,java]
+----
+step(...).retryOn(RetryRef.of("gateway-timeout"))
+----
+
+The values in `retry-on` must be names of `RuntimeException` classes.
+If a class does not exist, the application does not start.
+
+== Calculate the delays
+
+After attempt _n_ fails, the engine waits:
+
+----
+delay = min(initial-backoff × multiplier^(n-1), max-backoff) × (1 - jitter × random)
+----
+
+`random` is a value from 0 to 1.
+With the values above, the delays are approximately 100 ms to 200 ms, then 200 ms to 400 ms.
+
+== Use a policy in code only
+
+. Make the policy in the flow definition:
++
+[source,java]
+----
+step(...).retryOn(RetryPolicy.on(5, e -> e instanceof TimeoutException)
+        .withBackoff(Duration.ofMillis(50), 2.0, Duration.ofSeconds(1)))
+----
+
+Use this method only in tests and examples.
+A policy in `application.yml` can change without a new build.
+
+All retry properties are in <<reference-configuration-flow>>.

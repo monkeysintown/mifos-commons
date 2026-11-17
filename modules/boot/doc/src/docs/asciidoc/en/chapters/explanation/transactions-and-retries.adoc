@@ -1,0 +1,45 @@
+[#explanation-transactions-and-retries]
+= Transactions and retries
+
+== Why a retry must be outside the transaction
+
+Two transactions can change the same data at the same time.
+The database then stops one transaction with a conflict, for example an optimistic lock failure.
+After the conflict, the transaction can only roll back.
+
+If the retry is in the transaction, the next attempt uses the same transaction.
+This attempt cannot succeed.
+If the retry is outside the transaction, each attempt has a new transaction with new data.
+
+Thus the engine does not bind a flow with `retryOn` in a boundary.
+Write `step(...).within(BoundaryRef.REQUIRED).retryOn(RetryRef.CONFLICT)`, or use `transactional(...)`.
+
+== Why parallel parts must be outside the transaction
+
+A Spring transaction belongs to one thread.
+The forks of `forkJoin` run on different threads.
+Thus the forks are not in the transaction of the caller.
+If the engine permits this structure, data can be written outside the transaction without a warning.
+
+== Why the rules do not depend on the configuration
+
+The engine examines the rules from the references in the definition.
+It does not examine the transactions that the names resolve to.
+Thus a flow that is not correct in production is also not correct in a test that uses `Boundary.NONE` for all names.
+
+== Delays between attempts
+
+The delay increases after each failed attempt (exponential backoff).
+Thus a system with a problem gets time to recover.
+A random part (jitter) makes the delays different.
+Thus many callers do not try again at the same time.
+
+== Sagas
+
+A saga is a sequence of actions.
+Each action can have an undo action.
+If an action fails, the engine runs the undo actions of the completed actions in the opposite sequence.
+
+Use a saga when the actions cannot be in one transaction, for example calls to different systems.
+An undo action does not remove the action.
+It does a new action with the opposite effect, for example a refund.

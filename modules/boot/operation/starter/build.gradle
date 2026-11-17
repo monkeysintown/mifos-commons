@@ -7,6 +7,8 @@ description = "Mifos Initiative - Commons - Boot - Operation - Starter"
 dependencies {
     api project(":mifos-commons-boot-operation-core")
     api project(":mifos-commons-boot-operation-flow")
+    api project(":mifos-commons-boot-operation-renderer-plantuml")
+    api project(":mifos-commons-boot-operation-renderer-kuml")
     api "org.springframework.boot:spring-boot-starter"
     api "org.springframework.boot:spring-boot-starter-data-jdbc"
 }

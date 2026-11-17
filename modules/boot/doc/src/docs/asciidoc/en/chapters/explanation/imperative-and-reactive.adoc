@@ -1,0 +1,36 @@
+[#explanation-imperative-and-reactive]
+= Imperative and reactive programming
+
+The libraries support the two programming models.
+The flow engine supports only the imperative model.
+
+== Why flows block
+
+The flow engine uses functions that return a value: a step receives a context and returns a context.
+Transactions use `TransactionTemplate`, which keeps the transaction on the current thread.
+Retries wait with `Thread.sleep`.
+Sagas and recovery use `try` and `catch`.
+
+These parts need one thread for the full flow.
+On an event loop thread, they stop all other requests on the thread.
+
+== Why this is not a problem on Java 25
+
+Virtual threads make blocking cheap.
+A blocked virtual thread does not hold a platform thread.
+The executor `default` already runs parallel parts on virtual threads.
+Thus most services get the necessary performance with the imperative model.
+The code stays easy to read and to debug.
+
+== How to use flows with reactive code
+
+Run the flow on a scheduler that can block, for example `Schedulers.boundedElastic()`.
+<<how-to-run-flows-from-reactive-code>> gives the procedure.
+The usecases must use JDBC, because the boundaries need a `PlatformTransactionManager`.
+
+== A reactive engine
+
+A flow definition is data.
+Thus a different engine can change the same definition into a reactive pipeline.
+For example, `sequence` becomes `flatMap`, `forkJoin` becomes `Mono.zip`, `retryOn` becomes `retryWhen` and `within` becomes `TransactionalOperator`.
+The current version does not have this engine.

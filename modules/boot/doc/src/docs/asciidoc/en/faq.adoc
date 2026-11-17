@@ -1,8 +1,32 @@
 [faq]
 = Frequently Asked Questions
 
-TBD
+Must I use flows?::
+No. A usecase works without a flow.
+Use a flow when a process has more than one usecase, a transaction, a retry or parallel work.
 
-What is the answer?:: This is the answer.
-Are cameras allowed?:: Yes.
-Are backpacks allowed?:: No.
+Why does my application not start after I added a flow?::
+The engine examines each flow when it binds it.
+Read the `MifosFlowException`: it gives the path in the flow and the cause.
+Usually a name is not configured, a usecase bean is missing, or `retryOn` or `forkJoin` is in a boundary.
+Refer to <<reference-flow-rules>>.
+
+Can a flow call a different flow?::
+Yes. Put the definition of the other flow in the flow, or use `subflow` if the context type is different.
+
+Can I use a flow in a WebFlux application?::
+Yes, but run it on a scheduler that can block.
+Refer to <<how-to-run-flows-from-reactive-code>>.
+
+How do I test a flow without a database?::
+Make an engine with `DefaultFlowEngine.builder()`.
+Register each boundary name with `Boundary.NONE` and each usecase with an instance.
+The engine applies the same rules as in production.
+
+Why does the diagram show "condition?" and "act"?::
+Conditions and actions are lambdas, and a renderer cannot read a lambda.
+Put `named` around the parts that the reader must understand.
+
+Which error code range can my application use?::
+Use codes from 300000000.
+Refer to <<how-to-define-error-codes>>.

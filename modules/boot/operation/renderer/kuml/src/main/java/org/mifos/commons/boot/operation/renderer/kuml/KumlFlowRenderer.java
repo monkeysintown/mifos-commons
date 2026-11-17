@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.function.Function;
 import kotlin.Unit;
 import org.mifos.commons.boot.operation.flow.MifosFlow;
+import org.mifos.commons.boot.operation.flow.spi.ExecutorRef;
 import org.mifos.commons.boot.operation.flow.spi.Renderer;
 
 /// Renders a [MifosFlow.Definition] as a BPMN process diagram in SVG format using kUML (laid out with ELK).
@@ -226,9 +227,8 @@ public final class KumlFlowRenderer implements Renderer {
                 return null;
             }
 
-            var executor = forkJoin.executor().equals(MifosFlow.ExecutorRef.DEFAULT)
-                    ? "merge"
-                    : "merge on " + forkJoin.executor();
+            var executor =
+                    forkJoin.executor().equals(ExecutorRef.DEFAULT) ? "merge" : "merge on " + forkJoin.executor();
             var split = p.gateway(GatewayType.PARALLEL, null, null);
             var join = p.gateway(GatewayType.PARALLEL, executor, null);
 

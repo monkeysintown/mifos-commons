@@ -1,0 +1,125 @@
+[#reference-modules]
+= Modules
+
+The group of all modules is `org.mifos.commons`.
+The column "Status" shows if a module is ready for use.
+
+[cols="3,4,1"]
+|===
+| Module | Contents | Status
+
+3+h| Base
+
+| `mifos-commons-boot-core`
+| Constants, the `mifos.commons` properties, the error model, the message source, the validator, the message bundles and the Liquibase base changelog.
+| Ready
+
+| `mifos-commons-boot-application`
+| The Mifos start banner.
+| Ready
+
+| `mifos-commons-boot-mapping`
+| A MapStruct configuration (`MifosMapperConfiguration`) and a base mapper (`MifosBeanMapper`).
+| Ready
+
+| `mifos-commons-boot-debug`
+| Listeners that log Caffeine and Ehcache cache events.
+| Ready
+
+| `mifos-commons-boot-testing`
+| Test support.
+| Empty
+
+3+h| Persistence
+
+| `mifos-commons-boot-persistence-relational-core`
+| The `mifos.commons.persistence.relational` properties and QueryDSL expressions for the PostgreSQL `ltree` type.
+| Ready
+
+| `mifos-commons-boot-persistence-relational-imperative`
+| Spring Data JDBC with QueryDSL, auditing, transactions and PostGIS SQL templates. The repository base `MifosPersistenceRelationalImperativeRepository`.
+| Ready
+
+| `mifos-commons-boot-persistence-relational-reactive`
+| Spring Data R2DBC with QueryDSL, auditing and PostGIS SQL templates.
+| Not complete
+
+3+h| Transport
+
+| `mifos-commons-boot-transport-rest-core`
+| The `mifos.commons.transport.rest` properties, error responses (RFC 9457), OpenAPI, the tenant header, CORS and the default page request.
+| Ready
+
+| `mifos-commons-boot-transport-rest-imperative`
+| Spring MVC: the locale from the `Accept-Language` header.
+| Not complete
+
+| `mifos-commons-boot-transport-rest-reactive`
+| Spring WebFlux: the locale from the `Accept-Language` header, page and sort parameters.
+| Not complete
+
+| `mifos-commons-boot-transport-grpc-core`, `-imperative`, `-reactive`
+| gRPC support.
+| Not complete
+
+| `mifos-commons-boot-transport-rsocket-core`, `-reactive`
+| RSocket support.
+| Not complete
+
+3+h| Operation
+
+| `mifos-commons-boot-operation-core`
+| `MifosUsecase`, `UsecaseRef` and `UsecaseResolver`. No Spring dependencies.
+| Ready
+
+| `mifos-commons-boot-operation-flow`
+| The flow DSL (`MifosFlow`), the flow engine (`DefaultFlowEngine`) and the extension points.
+| Ready
+
+| `mifos-commons-boot-operation-starter`
+| The auto-configuration of the flow engine and the usecase resolver, the `mifos.operation.flow` properties and the Micrometer observations.
+| Ready
+
+| `mifos-commons-boot-operation-renderer-plantuml`
+| Flow diagrams as PlantUML activity diagrams.
+| Ready
+
+| `mifos-commons-boot-operation-renderer-kuml`
+| Flow diagrams as BPMN process diagrams in SVG format (kUML).
+| Ready
+
+3+h| Command line
+
+| `mifos-commons-boot-cli-core`
+| The command line contracts and `MifosCliException`.
+| Ready
+
+| `mifos-commons-boot-cli-pico`
+| A picocli command line with a JLine prompt.
+| Ready
+
+| `mifos-commons-boot-cli-tamboui`
+| A TamboUI terminal user interface.
+| Ready
+
+| `mifos-commons-boot-cli-shell`
+| A Spring Shell command line.
+| Not complete
+
+3+h| Starters
+
+| `mifos-commons-boot-starter-imperative`
+| Core, mapping, application, testing, imperative persistence and imperative REST.
+| Ready
+
+| `mifos-commons-boot-starter-reactive`
+| Core, mapping, application, testing, reactive persistence and reactive REST.
+| Ready
+|===
+
+== Dependencies between the modules
+
+[plantuml,modules,svg]
+----
+include::{diagramsdir}/modules.puml[]
+----

@@ -9,6 +9,7 @@ import com.google.errorprone.annotations.Var;
 import java.util.List;
 import java.util.Locale;
 import org.mifos.commons.boot.operation.flow.MifosFlow;
+import org.mifos.commons.boot.operation.flow.spi.ExecutorRef;
 import org.mifos.commons.boot.operation.flow.spi.Renderer;
 
 /// Renders a [MifosFlow.Definition] as a PlantUML activity diagram (the
@@ -157,8 +158,7 @@ public final class PlantUmlFlowRenderer implements Renderer {
                 MifosFlow.Definition<?> fork = forks.get(i);
                 indented(() -> node(fork, null));
             }
-            String executor =
-                    forkJoin.executor().equals(MifosFlow.ExecutorRef.DEFAULT) ? "" : " on " + forkJoin.executor();
+            String executor = forkJoin.executor().equals(ExecutorRef.DEFAULT) ? "" : " on " + forkJoin.executor();
             line("end fork {merge" + oneLine(executor) + "}");
         }
 

@@ -1,0 +1,281 @@
+[#tutorial-first-flow]
+= Your first flow
+
+In this tutorial, you make a money transfer.
+The transfer has two steps:
+
+. Make sure that the source account has sufficient funds.
+. Post a journal entry in a transaction.
+If a different transaction changes the same data at the same time, try the posting again.
+
+You write the two steps as usecases.
+Then you connect the usecases in a flow.
+At the end, you make a diagram of the flow.
+
+== Before you start
+
+You must have:
+
+* Java 25.
+* A Spring Boot 4 application that you can start.
+* Gradle. If you use Maven, use the same coordinates.
+
+== Step 1: Add the libraries
+
+Add these dependencies to `build.gradle`:
+
+[source,groovy]
+----
+dependencies {
+    implementation "org.mifos.commons:mifos-commons-boot-operation-starter:0.1.0-SNAPSHOT"
+    runtimeOnly "com.h2database:h2"
+
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.mifos.commons:mifos-commons-boot-operation-renderer-plantuml:0.1.0-SNAPSHOT"
+}
+----
+
+The operation starter gives you the flow engine and the usecase support.
+The H2 database gives the application a transaction manager.
+The flow engine uses this transaction manager for the transaction in step 2.
+
+== Step 2: Make the context
+
+The context holds the data of one transfer.
+Each step reads the context and returns a new context.
+
+[source,java]
+----
+package com.example.transfer;
+
+import java.math.BigDecimal;
+import org.mifos.commons.boot.operation.flow.MifosFlow.MifosFlowContext;
+
+public record TransferContext(String from, String to, BigDecimal amount, String entryId)
+        implements MifosFlowContext {
+
+    TransferContext withEntryId(String entryId) {
+        return new TransferContext(from, to, amount, entryId);
+    }
+}
+----
+
+The context is a record.
+A record cannot change, thus the steps cannot have an effect on each other by accident.
+
+== Step 3: Make the usecases
+
+A usecase is one unit of business logic.
+It receives a request and returns a response.
+
+Make the usecase that examines the funds:
+
+[source,java]
+----
+package com.example.transfer;
+
+import java.math.BigDecimal;
+import org.mifos.commons.boot.operation.core.usecase.MifosUsecase;
+import org.mifos.commons.boot.operation.core.usecase.MifosUsecase.MifosRequest;
+import org.mifos.commons.boot.operation.core.usecase.MifosUsecase.MifosResponse;
+import org.springframework.stereotype.Component;
+
+@Component
+class CheckFunds implements MifosUsecase<CheckFunds.Request, CheckFunds.Response> {
+
+    record Request(String account, BigDecimal amount) implements MifosRequest {}
+
+    record Response() implements MifosResponse {}
+
+    @Override
+    public Response execute(Request request) {
+        BigDecimal balance = new BigDecimal("100.00"); // in a real application, read the balance
+        if (balance.compareTo(request.amount()) < 0) {
+            throw new IllegalStateException("Insufficient funds");
+        }
+        return new Response();
+    }
+}
+----
+
+Make the usecase that posts the journal entry:
+
+[source,java]
+----
+package com.example.transfer;
+
+import java.math.BigDecimal;
+import java.util.UUID;
+import org.mifos.commons.boot.operation.core.usecase.MifosUsecase;
+import org.mifos.commons.boot.operation.core.usecase.MifosUsecase.MifosRequest;
+import org.mifos.commons.boot.operation.core.usecase.MifosUsecase.MifosResponse;
+import org.springframework.stereotype.Component;
+
+@Component
+class PostEntry implements MifosUsecase<PostEntry.Request, PostEntry.Response> {
+
+    record Request(String from, String to, BigDecimal amount) implements MifosRequest {}
+
+    record Response(String entryId) implements MifosResponse {}
+
+    @Override
+    public Response execute(Request request) {
+        return new Response(UUID.randomUUID().toString()); // in a real application, write to the ledger
+    }
+}
+----
+
+Both usecases are Spring beans.
+The flow engine finds them by their type.
+
+== Step 4: Write the flow
+
+Write the flow as a constant:
+
+[source,java]
+----
+package com.example.transfer;
+
+import static org.mifos.commons.boot.operation.flow.MifosFlow.Dsl.check;
+import static org.mifos.commons.boot.operation.flow.MifosFlow.Dsl.named;
+import static org.mifos.commons.boot.operation.flow.MifosFlow.Dsl.sequence;
+import static org.mifos.commons.boot.operation.flow.MifosFlow.Dsl.step;
+
+import org.mifos.commons.boot.operation.flow.MifosFlow.Definition;
+import org.mifos.commons.boot.operation.flow.MifosFlow.RetryRef;
+import org.mifos.commons.boot.operation.flow.spi.BoundaryRef;
+
+final class TransferFlows {
+
+    static final Definition<TransferContext> TRANSFER = named("transfer", sequence(
+            check((TransferContext c) -> new CheckFunds.Request(c.from(), c.amount()), CheckFunds.class),
+            step(c -> new PostEntry.Request(c.from(), c.to(), c.amount()), PostEntry.class,
+                    (TransferContext c, PostEntry.Response response) -> c.withEntryId(response.entryId()))
+                    .within(BoundaryRef.REQUIRED)
+                    .retryOn(RetryRef.CONFLICT)));
+
+    private TransferFlows() {}
+}
+----
+
+Read the flow from top to bottom:
+
+* `check` runs `CheckFunds`. The context does not change. If the usecase throws an exception, the flow stops.
+* `step` makes a request from the context, runs `PostEntry` and puts the response into a new context.
+* `within(BoundaryRef.REQUIRED)` runs the posting in a transaction.
+* `retryOn(RetryRef.CONFLICT)` tries the posting again if a different transaction changed the same data.
+
+The flow is only a description.
+Nothing runs yet.
+
+TIP: Give the lambda parameters their types, as in `(TransferContext c, PostEntry.Response response)`.
+Java must know the context type before it can use `within` and `retryOn` on the step.
+
+== Step 5: Bind the flow
+
+The flow engine changes the description into a flow that you can run.
+This is "binding".
+Bind the flow one time, when the application starts:
+
+[source,java]
+----
+package com.example.transfer;
+
+import java.math.BigDecimal;
+import org.mifos.commons.boot.operation.flow.MifosFlow;
+import org.springframework.stereotype.Service;
+
+@Service
+public class TransferService {
+
+    private final MifosFlow<TransferContext> transfer;
+
+    TransferService(MifosFlow.Engine engine) {
+        this.transfer = engine.bind(TransferFlows.TRANSFER);
+    }
+
+    public String transfer(String from, String to, BigDecimal amount) {
+        return transfer.run(new TransferContext(from, to, amount, null)).entryId();
+    }
+}
+----
+
+When it binds the flow, the engine finds the usecases, the transaction and the retry policy.
+If a part is missing, the application does not start.
+Thus you find errors before the first request.
+
+== Step 6: Run the flow
+
+Write a test:
+
+[source,java]
+----
+package com.example.transfer;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.math.BigDecimal;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class TransferServiceTest {
+
+    @Autowired
+    TransferService service;
+
+    @Test
+    void transfersMoney() {
+        assertNotNull(service.transfer("A-1", "A-2", new BigDecimal("10.00")));
+    }
+
+    @Test
+    void stopsWhenFundsAreNotSufficient() {
+        assertThrows(IllegalStateException.class,
+                () -> service.transfer("A-1", "A-2", new BigDecimal("500.00")));
+    }
+}
+----
+
+Run the test:
+
+[source,bash]
+----
+./gradlew test
+----
+
+The two tests pass.
+
+== Step 7: Make a diagram of the flow
+
+The flow is data, thus you can make a diagram of it.
+Add this test:
+
+[source,java]
+----
+@Test
+void drawsTheFlow() {
+    String puml = new PlantUmlFlowRenderer().render(TransferFlows.TRANSFER);
+    System.out.println(puml);
+}
+----
+
+Import `org.mifos.commons.boot.operation.renderer.plantuml.PlantUmlFlowRenderer`.
+Run the test again.
+The test writes a PlantUML activity diagram to the console.
+The diagram has the title "transfer", the check, and the posting in a transaction partition and a retry loop.
+
+== What you did
+
+* You wrote business logic as usecases.
+* You connected the usecases in a flow with a transaction and a retry.
+* You bound the flow when the application started.
+* You made a diagram from the same flow.
+
+== Next steps
+
+* To change the transaction or the retry policy, refer to <<how-to-configure-boundaries>> and <<how-to-configure-retry-policies>>.
+* To learn all the parts of a flow, refer to <<reference-flow-dsl>>.
+* To learn why flows are data, refer to <<explanation-usecases-and-flows>>.

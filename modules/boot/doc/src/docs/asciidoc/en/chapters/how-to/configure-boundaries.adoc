@@ -1,0 +1,68 @@
+[#how-to-configure-boundaries]
+= Configure a transaction boundary
+
+A boundary is the transaction around a part of a flow.
+A flow refers to a boundary by its name.
+The names `required`, `requires-new` and `read-only` are always available.
+
+== Use a built-in boundary
+
+. Put `within` on the part of the flow that must be in a transaction:
++
+[source,java]
+----
+step(...).within(BoundaryRef.REQUIRED)
+----
+
+== Add a new boundary
+
+. Select a name, for example `ledger-report`.
+. Add the boundary to `application.yml`:
++
+[source,yaml]
+----
+mifos:
+  operation:
+    flow:
+      boundaries:
+        ledger-report:
+          propagation: requires-new
+          read-only: true
+          timeout: 30s
+----
+. Refer to the name in the flow:
++
+[source,java]
+----
+step(...).within(BoundaryRef.of("ledger-report"))
+----
+
+== Use a different transaction manager
+
+If the application has more than one transaction manager, use the bean name.
+
+. Add `transaction-manager` to the boundary:
++
+[source,yaml]
+----
+mifos:
+  operation:
+    flow:
+      boundaries:
+        reporting:
+          transaction-manager: reportingTransactionManager
+----
+
+If you do not set `transaction-manager`, the boundary uses the primary transaction manager.
+
+== Change a built-in boundary
+
+. Add a boundary with the same name, for example `required`.
+Your values replace the built-in values.
+
+CAUTION: Do not put `retryOn` or `forkJoin` in a boundary.
+The engine does not bind the flow and the application does not start.
+Put the boundary in the retry: `step(...).within(BoundaryRef.REQUIRED).retryOn(RetryRef.CONFLICT)`.
+<<explanation-transactions-and-retries>> gives the reason.
+
+All boundary properties are in <<reference-configuration-flow>>.

@@ -1,0 +1,45 @@
+[#how-to-define-error-codes]
+= Define error codes for your application
+
+Each error has a numeric code, a message key and a category.
+The codes from 300000000 are for applications.
+
+. Make an enum that implements `MifosError.Code`:
++
+[source,java]
+----
+@Getter
+@RequiredArgsConstructor
+public enum LoanErrorCode implements MifosError.Code {
+    LOAN_NOT_FOUND(300000000, "org.mifos.loan.error.not-found"),
+    LOAN_ALREADY_DISBURSED(300000010, "org.mifos.loan.error.already-disbursed");
+
+    private final int value;
+    private final String key;
+
+    @Override
+    public String getName() {
+        return name();
+    }
+}
+----
+. Add the messages to `src/main/resources/org/mifos/loan/messages.properties`:
++
+[source,properties]
+----
+org.mifos.loan.error.not-found=Loan {0} does not exist.
+org.mifos.loan.error.already-disbursed=Loan {0} is already disbursed.
+----
+. Add a file for each language, for example `messages_de.properties`.
+. Throw the error:
++
+[source,java]
+----
+throw new MifosException(MifosError.of(LOAN_NOT_FOUND, MifosError.Category.NOT_FOUND, List.of(loanId)));
+----
+
+The category gives the HTTP status of the response.
+<<reference-errors>> gives all categories and the response format.
+
+TIP: Use an increment of 10 between codes.
+Then you can add a code between two codes at a later time.

@@ -1,0 +1,29 @@
+[#explanation-error-model]
+= The error model
+
+== Codes and keys
+
+Each error has a number and a message key.
+
+* The number does not change.
+Clients and support teams use it to identify the error.
+The documentation URL of the error contains the number.
+* The message key gives a translated text.
+The text can change without an effect on clients.
+
+The numbers have ranges.
+Each module has its range, and applications start at 300000000.
+Thus two modules cannot use the same number.
+
+== Categories
+
+The category tells what kind of error occurred, for example `NOT_FOUND` or `BUSINESS_RULE`.
+The transport layer changes the category into a status, for example an HTTP status.
+Thus the business logic does not know about HTTP.
+A gRPC or RSocket transport can use the same category with a different status.
+
+== Problem details
+
+REST responses use the standard format for problem details (RFC 9457).
+Clients can read the errors of all Mifos services with the same code.
+The `errors` property contains the full `MifosError` items, for example one item for each field that is not valid.

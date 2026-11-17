@@ -1,0 +1,21 @@
+[#how-to-run-flows-from-reactive-code]
+= Run a flow from reactive code
+
+A flow blocks the thread until it is complete.
+Do not run a flow on an event loop thread of WebFlux or RSocket.
+
+. Run the flow on a scheduler that can block:
++
+[source,java]
+----
+@PostMapping("/transfers")
+Mono<String> transfer(@RequestBody TransferRequest request) {
+    return Mono.fromCallable(() -> transferService.transfer(request.from(), request.to(), request.amount()))
+            .subscribeOn(Schedulers.boundedElastic());
+}
+----
+
+The usecases in the flow must use JDBC, not R2DBC.
+Boundaries use `TransactionTemplate`, which needs a `PlatformTransactionManager`.
+
+<<explanation-imperative-and-reactive>> gives the reasons.

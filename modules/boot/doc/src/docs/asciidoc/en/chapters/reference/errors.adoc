@@ -1,0 +1,132 @@
+[#reference-errors]
+= Errors
+
+== MifosError
+
+`org.mifos.commons.boot.core.exception.MifosError` describes one error.
+
+[cols="1,2,4"]
+|===
+| Field | Type | Description
+
+| `category` | `MifosError.Category` | The kind of error. It gives the HTTP status.
+| `code` | `MifosError.Code` | The numeric code and the message key.
+| `field` | String | The field with the error, for validation errors.
+| `message` | String | A message that is not translated.
+| `args` | List | The values for the placeholders in the message (`{0}`, `{1}`, ...).
+| `cause` | Throwable | The exception that caused the error.
+|===
+
+Use the `MifosError.of(...)` methods to make an error.
+If you do not give a category, the category is `BUSINESS_RULE`.
+
+== Categories
+
+[cols="2,1,3"]
+|===
+| Category | HTTP status | Use it when
+
+| `VALIDATION` | 400 | The input is not valid.
+| `UNAUTHENTICATED` | 401 | The caller is not known.
+| `FORBIDDEN` | 403 | The caller does not have the permission.
+| `NOT_FOUND` | 404 | The item does not exist.
+| `CONFLICT` | 409 | The item changed or exists.
+| `BUSINESS_RULE` | 422 | A business rule is not satisfied.
+| `RATE_LIMITED` | 429 | The caller sent too many requests.
+| `DEPENDENCY_FAILURE` | 502 | A different system failed.
+| `UNAVAILABLE` | 503 | The service is not available for a short time.
+| `INTERNAL` | 500 | An error in the service.
+|===
+
+== Codes
+
+`MifosError.Code` has three methods: `getValue()` (the number), `getName()` (the name) and `getKey()` (the message key).
+The exceptions show the code with 9 digits, for example `100040030`.
+
+[cols="2,2,3"]
+|===
+| Range | First code | Owner
+
+| Common | 100000000 | `MifosException.MifosCommonErrorCode`
+| Validation | 100010000 | `MifosValidationException.MifosValidationErrorCode`
+| Operation | 100020000 | Reserved
+| Usecase | 100030000 | Reserved
+| Flow | 100040000 | `MifosFlowException.MifosFlowErrorCode`
+| Command line | 100050000 | `MifosCliException.MifosCliErrorCode`
+| Applications | 300000000 | Your application
+|===
+
+In a range, the codes increase by 10.
+
+=== Library codes
+
+[cols="3,1,3"]
+|===
+| Code | Value | Message key
+
+| `MIFOS_COMMONS_ERROR_UNKNOWN` | 100000000 | `org.mifos.commons.error.unknown`
+| `MIFOS_COMMONS_ERROR_NOT_FOUND` | 100000010 | `org.mifos.commons.error.not-found`
+| `MIFOS_COMMONS_ERROR_VALIDATION_UNKNOWN` | 100010000 | `org.mifos.commons.error.validation`
+| `MIFOS_COMMONS_ERROR_VALIDATION` | 100010010 | `org.mifos.commons.error.validation`
+| `MIFOS_COMMONS_ERROR_VALIDATION_CONSTRAINT` | 100010020 | `org.mifos.commons.error.validation`
+| `MIFOS_COMMONS_ERROR_FLOW_UNKNOWN` | 100040000 | `org.mifos.commons.error.flow.unknown`
+| `MIFOS_COMMONS_ERROR_FLOW_CLASS_UNKNOWN` | 100040010 | `org.mifos.commons.error.flow.class.unknown`
+| `MIFOS_COMMONS_ERROR_FLOW_ITERATION_LIMIT` | 100040020 | `org.mifos.commons.error.flow.iteration.limit`
+| `MIFOS_COMMONS_ERROR_FLOW_DEFINITION` | 100040030 | `org.mifos.commons.error.flow.definition`
+| `MIFOS_COMMONS_ERROR_CLI_UNKNOWN` | 100050000 | `org.mifos.commons.error.cli.unknown`
+| `MIFOS_COMMONS_ERROR_CLI_GENERIC` | 100050020 | `org.mifos.commons.error.cli.generic`
+|===
+
+== Exceptions
+
+[cols="2,2,3"]
+|===
+| Exception | Module | Use
+
+| `MifosBaseException` | core | The base class. The message of the exception is the message key.
+| `MifosException` | core | General errors.
+| `MifosValidationException` | core | Validation errors from Spring `Errors`.
+| `MifosFlowException` | operation-flow | Errors of the flow engine.
+| `MifosCliException` | cli-core | Errors of the command line.
+|===
+
+== Error responses
+
+The REST module changes exceptions into responses with the content type `application/problem+json` (https://www.rfc-editor.org/rfc/rfc9457[RFC 9457]).
+
+[source,json]
+----
+{
+  "type": "https://doc.mifos.org/projects/common/errors/100040030",
+  "title": "100040030",
+  "status": 500,
+  "detail": "<translated message>",
+  "errors": [ { "category": "INTERNAL", "code": "...", "field": null, "args": [] } ]
+}
+----
+
+[cols="2,3,2"]
+|===
+| Exception | `type` | `title`
+
+| `MifosBaseException`
+| `{error-url}/<code with 9 digits>`
+| The code with 9 digits
+
+| `MifosValidationException`, `ConstraintViolationException`, `MethodArgumentNotValidException`, `WebExchangeBindException`
+| `{error-url}/validation`
+| The code of the first error
+
+| All other exceptions
+| `{error-url}/error`
+| The message of `org.mifos.commons.error.unknown`
+|===
+
+`{error-url}` is the value of `mifos.commons.error-url`.
+For validation errors, `errors` has one item for each field.
+
+== Messages
+
+The core module has validation messages in English, German, Spanish, French and Indonesian.
+The files are in `org/mifos/commons/messages*.properties`.
+The message source also reads `org/mifos/*/messages.properties` from other modules and applications.

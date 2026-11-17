@@ -5,13 +5,18 @@
 ///
 package org.mifos.commons.boot.operation.starter.flow;
 
+import static org.mifos.commons.boot.operation.starter.flow.MifosFlowProperties.RendererType.PLANTUML;
+
 import io.micrometer.observation.ObservationRegistry;
 import org.mifos.commons.boot.operation.core.usecase.UsecaseResolver;
 import org.mifos.commons.boot.operation.flow.MifosFlow;
 import org.mifos.commons.boot.operation.flow.engine.DefaultFlowEngine;
 import org.mifos.commons.boot.operation.flow.spi.BoundaryResolver;
 import org.mifos.commons.boot.operation.flow.spi.ExecutorResolver;
+import org.mifos.commons.boot.operation.flow.spi.Renderer;
 import org.mifos.commons.boot.operation.flow.spi.RetryPolicyResolver;
+import org.mifos.commons.boot.operation.renderer.kuml.KumlFlowRenderer;
+import org.mifos.commons.boot.operation.renderer.plantuml.PlantUmlFlowRenderer;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -75,6 +80,16 @@ public class MifosFlowConfiguration {
         interceptors.orderedStream().forEach(builder::interceptor);
         customizers.orderedStream().forEach(customizer -> customizer.customize(builder));
         return builder.build();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    Renderer mifosFlowRenderer(MifosFlowProperties properties) {
+        if (PLANTUML.equals(properties.rendererType())) {
+            return new PlantUmlFlowRenderer();
+        }
+
+        return new KumlFlowRenderer();
     }
 
     @Configuration(proxyBeanMethods = false)

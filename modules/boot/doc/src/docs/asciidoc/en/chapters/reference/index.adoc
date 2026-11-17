@@ -1,0 +1,18 @@
+[#reference]
+= Reference
+
+The reference gives facts about the modules, the configuration, the errors and the APIs.
+It does not give procedures.
+For procedures, refer to the <<how-to,how-to guides>>.
+
+include::modules.adoc[leveloffset=+1]
+
+include::configuration.adoc[leveloffset=+1]
+
+include::flow-dsl.adoc[leveloffset=+1]
+
+include::errors.adoc[leveloffset=+1]
+
+include::extension-points.adoc[leveloffset=+1]
+
+include::observability.adoc[leveloffset=+1]

@@ -1,0 +1,27 @@
+[#reference-observability]
+= Observability
+
+The application can have an `ObservationRegistry` bean, for example from Spring Boot Actuator.
+Then the operation starter records each step, check and named part of a flow.
+
+== Observation
+
+[cols="2,4"]
+|===
+| Item | Value
+
+| Name | `mifos.flow`
+| Contextual name | The name of the part, for example the usecase class or the `named` name.
+| Low cardinality key `mifos.flow.node` | The name of the part.
+| Low cardinality key `mifos.flow.kind` | The kind of the part, for example `step`, `check` or `named`.
+| High cardinality key `mifos.flow.path` | The path of the part in the flow.
+| Event `mifos.flow.retry` | One event for each retry: "retry _n_ of _path_ after _exception_".
+|===
+
+Micrometer makes a timer `mifos.flow` with the low cardinality keys as tags.
+If tracing is configured, each observation is also a span.
+
+== Context in parallel parts
+
+If `io.micrometer:context-propagation` is on the classpath, the executors copy the context of the caller to each fork.
+The context includes the MDC, the tracing context and the security context.

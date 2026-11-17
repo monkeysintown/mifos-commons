@@ -27,8 +27,8 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.mifos.commons.boot.operation.flow.MifosFlow.Definition;
 import org.mifos.commons.boot.operation.flow.MifosFlow.MifosFlowContext;
-import org.mifos.commons.boot.operation.flow.MifosFlow.RetryRef;
 import org.mifos.commons.boot.operation.flow.spi.BoundaryRef;
+import org.mifos.commons.boot.operation.flow.spi.RetryRef;
 
 final class KumlFlowRendererTest {
     private final KumlFlowRenderer renderer = new KumlFlowRenderer();

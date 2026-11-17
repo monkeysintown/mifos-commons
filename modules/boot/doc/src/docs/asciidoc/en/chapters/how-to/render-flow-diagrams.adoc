@@ -1,0 +1,51 @@
+[#how-to-render-flow-diagrams]
+= Make a diagram of a flow
+
+You can make a diagram from a flow definition.
+You do not need a running application, a database or the usecases.
+
+[cols="2,2,3"]
+|===
+| Renderer | Output | Module
+
+| `PlantUmlFlowRenderer`
+| PlantUML activity diagram (text)
+| `mifos-commons-boot-operation-renderer-plantuml`
+
+| `KumlFlowRenderer`
+| BPMN process diagram (SVG)
+| `mifos-commons-boot-operation-renderer-kuml`
+|===
+
+. Add the module of the renderer (refer to <<how-to-add-libraries>>).
+. Call `render` with the flow definition:
++
+[source,java]
+----
+String svg = new KumlFlowRenderer().render(TransferFlows.TRANSFER);
+Files.writeString(Path.of("build/transfer.svg"), svg);
+----
+
+If the flow starts with `named`, the name becomes the title of the diagram.
+To set a different title, use `render(definition, "Money transfer")`.
+
+== Make the diagram easy to read
+
+Conditions and anonymous actions are lambdas.
+A renderer cannot read a lambda, thus it writes a general label, for example "condition?" or "act".
+
+. Put `named` around the parts that the reader must understand:
++
+[source,java]
+----
+named("charge fee", act(c -> c.withFee(fee)))
+----
+
+== Limits of the BPMN renderer
+
+* Only the top level of the flow can have sub-processes with a frame.
+Groups in a sub-process show without a frame.
+* Retry and recovery use error events on the edge of a task only at the top level.
+In a sub-process, they show as gateways.
+
+<<reference-flow-dsl>> gives the diagram element for each part of a flow.

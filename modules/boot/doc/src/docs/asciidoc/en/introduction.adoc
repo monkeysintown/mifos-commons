@@ -1,5 +1,60 @@
 = Introduction
 
-TBD
+{organization} Commons Boot is a set of libraries for Spring Boot applications.
+The libraries give Mifos applications the same base for configuration, errors, persistence, transport and operations.
 
-Some Change
+Use these libraries when you write a Mifos service in Java.
+You get:
+
+* An error model with codes, categories and translated messages.
+* Auto-configuration for relational persistence, REST, gRPC and RSocket.
+* Usecases: small units of business logic with a request and a response.
+* Flows: business processes that you write as data and run with transactions, retries and parallel steps.
+* Diagrams of your flows in PlantUML and BPMN format.
+* Command line, banner and debug tools.
+
+== Requirements
+
+* Java 25 or later.
+* Spring Boot 4.
+* Gradle or Maven.
+
+== How this document is organized
+
+This document follows the https://diataxis.fr[Diátaxis] framework.
+Each part has a different purpose.
+Select the part that agrees with your need.
+
+[cols="1,3,2"]
+|===
+| Part | Purpose | Read it when
+
+| <<tutorials,Tutorials>>
+| Lessons that teach you step by step.
+| You are new to the libraries.
+
+| <<how-to,How-to guides>>
+| Procedures that solve one specific task.
+| You know what you must do.
+
+| <<reference,Reference>>
+| Precise descriptions of modules, properties, errors and APIs.
+| You must find a fact.
+
+| <<explanation,Explanation>>
+| Discussions of the design and the decisions.
+| You want to know why the libraries work as they do.
+|===
+
+== Language
+
+This document uses Simplified Technical English (https://www.asd-ste100.org/[ASD-STE100]).
+The sentences are short and each word has one meaning.
+Names of classes, methods, properties and files are not changed.
+<<documentation-style>> gives the rules for writers.
+
+== AI Attribution
+
+AI tools helped to write this document.
+A person reviewed the result.
+<<ai-attribution>> gives the full statement.

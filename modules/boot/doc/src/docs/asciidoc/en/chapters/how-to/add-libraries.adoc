@@ -1,0 +1,53 @@
+[#how-to-add-libraries]
+= Add the libraries to an application
+
+All modules have the group `org.mifos.commons`.
+The artifact name is the module name, for example `mifos-commons-boot-core`.
+<<reference-modules>> gives all modules.
+
+. Select a starter that agrees with your application:
++
+[cols="2,3"]
+|===
+| Application | Starter
+
+| Spring MVC and JDBC
+| `mifos-commons-boot-starter-imperative`
+
+| Spring WebFlux and R2DBC
+| `mifos-commons-boot-starter-reactive`
+|===
+
+. Add the starter to `build.gradle`:
++
+[source,groovy]
+----
+dependencies {
+    implementation "org.mifos.commons:mifos-commons-boot-starter-imperative:0.1.0-SNAPSHOT"
+}
+----
+
+. If you use usecases or flows, add the operation starter:
++
+[source,groovy]
+----
+dependencies {
+    implementation "org.mifos.commons:mifos-commons-boot-operation-starter:0.1.0-SNAPSHOT"
+}
+----
+
+. If you make flow diagrams, add one or two renderers:
++
+[source,groovy]
+----
+dependencies {
+    implementation "org.mifos.commons:mifos-commons-boot-operation-renderer-plantuml:0.1.0-SNAPSHOT"
+    implementation "org.mifos.commons:mifos-commons-boot-operation-renderer-kuml:0.1.0-SNAPSHOT"
+}
+----
+
+. Start the application.
+The Mifos banner shows in the console.
+
+NOTE: The starters do not include the operation modules, gRPC, RSocket or the command line modules.
+Add these modules yourself if you need them.

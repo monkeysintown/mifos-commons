@@ -10,20 +10,20 @@ import static java.util.Objects.requireNonNull;
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.random.RandomGenerator;
-import org.jspecify.annotations.NonNull;
 import org.mifos.commons.boot.operation.core.usecase.MifosUsecase;
 import org.mifos.commons.boot.operation.core.usecase.MifosUsecase.MifosRequest;
 import org.mifos.commons.boot.operation.core.usecase.MifosUsecase.MifosResponse;
 import org.mifos.commons.boot.operation.core.usecase.UsecaseRef;
 import org.mifos.commons.boot.operation.flow.exception.MifosFlowException;
 import org.mifos.commons.boot.operation.flow.spi.BoundaryRef;
+import org.mifos.commons.boot.operation.flow.spi.ExecutorRef;
+import org.mifos.commons.boot.operation.flow.spi.RetryRef;
 
 /// An executable flow: a function from one immutable context to the next.
 ///
@@ -467,62 +467,6 @@ public interface MifosFlow<C extends MifosFlow.MifosFlowContext> {
         <C extends MifosFlowContext> MifosFlow<C> bind(Definition<C> definition, Placement placement);
     }
 
-    /// The executor that runs [Definition.ForkJoin] forks, referenced by name or given directly.
-    sealed interface ExecutorRef {
-        /// The executor named `default`.
-        ExecutorRef DEFAULT = new ByName("default");
-
-        /// References an executor by name.
-        ///
-        /// @param name the executor name
-        /// @return the reference
-        static ExecutorRef of(String name) {
-            return new ByName(name);
-        }
-
-        /// References an executor given directly.
-        ///
-        /// @param executor the executor
-        /// @return the reference
-        static ExecutorRef of(Executor executor) {
-            return new Direct(executor);
-        }
-
-        /// An executor referenced by name, resolved by the [Engine].
-        ///
-        /// @param name the executor name
-        record ByName(String name) implements ExecutorRef {
-            /// Creates a reference.
-            ///
-            /// @param name the executor name; not `null`
-            public ByName {
-                requireNonNull(name, "name");
-            }
-
-            @Override
-            @NonNull public String toString() {
-                return name;
-            }
-        }
-
-        /// An executor given directly.
-        ///
-        /// @param executor the executor
-        record Direct(Executor executor) implements ExecutorRef {
-            /// Creates a reference.
-            ///
-            /// @param executor the executor; not `null`
-            public Direct {
-                requireNonNull(executor, "executor");
-            }
-
-            @Override
-            @NonNull public String toString() {
-                return "direct";
-            }
-        }
-    }
-
     /// Around-advice for steps, checks and named parts of a flow, for metrics, tracing, audit, MDC and similar.
     ///
     /// Interceptors are attached when a flow is bound, so they also apply inside fork/join forks without any
@@ -653,76 +597,6 @@ public interface MifosFlow<C extends MifosFlow.MifosFlowContext> {
             double factor = 1.0 - jitter * random.nextDouble();
             return Duration.ofNanos((long) (capped * factor));
         }
-    }
-
-    /// A [RetryPolicy], referenced by name (resolved by the [Engine], e.g. from configuration properties) or given
-    /// directly.
-    sealed interface RetryRef {
-        /// Optimistic-locking and similar concurrency conflicts.
-        RetryRef CONFLICT = new ByName("conflict");
-
-        /// References a retry policy by name.
-        ///
-        /// @param name the policy name
-        /// @return the reference
-        static RetryRef of(String name) {
-            return new ByName(name);
-        }
-
-        /// References a retry policy given directly.
-        ///
-        /// @param policy the policy
-        /// @return the reference
-        static RetryRef of(RetryPolicy policy) {
-            return new Direct(policy);
-        }
-
-        /// A retry policy referenced by name, resolved by the [Engine].
-        ///
-        /// @param name the policy name
-        record ByName(String name) implements RetryRef {
-            /// Creates a reference.
-            ///
-            /// @param name the policy name; not `null`
-            public ByName {
-                requireNonNull(name, "name");
-            }
-
-            @Override
-            @NonNull public String toString() {
-                return name;
-            }
-        }
-
-        /// A retry policy given directly.
-        ///
-        /// @param policy the policy
-        record Direct(RetryPolicy policy) implements RetryRef {
-            /// Creates a reference.
-            ///
-            /// @param policy the policy; not `null`
-            public Direct {
-                requireNonNull(policy, "policy");
-            }
-
-            @Override
-            @NonNull public String toString() {
-                return "direct";
-            }
-        }
-    }
-
-    /// Pauses between retry attempts. Replaceable so that tests do not have to wait.
-    @FunctionalInterface
-    interface Sleeper {
-        /// Sleeps with [Thread#sleep(Duration)].
-        Sleeper THREAD = Thread::sleep;
-
-        /// Pauses for the given duration.
-        ///
-        /// @param duration how long to pause
-        /// @throws InterruptedException if the thread is interrupted while pausing
-        void sleep(Duration duration) throws InterruptedException;
     }
 
     /// Describes the node an interceptor is wrapping.

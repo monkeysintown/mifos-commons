@@ -1,0 +1,62 @@
+[#how-to-customize-engine]
+= Customize the flow engine
+
+The operation starter makes the flow engine from replaceable beans.
+Use the method that agrees with your change.
+
+== Add an interceptor
+
+An interceptor runs around each step, check and named part of a flow.
+
+. Make a bean that implements `MifosFlow.Interceptor`:
++
+[source,java]
+----
+@Component
+@Order(10)
+class AuditInterceptor implements MifosFlow.Interceptor {
+
+    @Override
+    public <C extends MifosFlowContext> C intercept(MifosFlow.Node node, C context, MifosFlow<C> next) {
+        log.info("Start {}", node.path());
+        return next.run(context);
+    }
+}
+----
+
+The engine uses all interceptor beans in `@Order` sequence.
+
+== Register a boundary, an executor or a retry policy in code
+
+. Make a bean that implements `EngineCustomizer`:
++
+[source,java]
+----
+@Bean
+EngineCustomizer testBoundaries() {
+    return builder -> builder.boundary("ledger", Boundary.NONE);
+}
+----
+
+The customizer receives the builder after all default values are set.
+
+== Replace one part
+
+. Make a bean of the type that you want to replace.
++
+[cols="2,3"]
+|===
+| Bean type | Default
+
+| `BoundaryResolver` | Boundaries from `mifos.operation.flow.boundaries`.
+| `RetryPolicyResolver` | Retry policies from `mifos.operation.flow.retry`.
+| `ExecutorResolver` | Executors from `mifos.operation.flow.executors`.
+| `UsecaseResolver` | The unique Spring bean of the usecase type.
+|===
+
+The starter does not make its default bean if your bean exists.
+
+== Replace the engine
+
+. Make a bean of the type `MifosFlow.Engine`.
+The starter does not make its engine.

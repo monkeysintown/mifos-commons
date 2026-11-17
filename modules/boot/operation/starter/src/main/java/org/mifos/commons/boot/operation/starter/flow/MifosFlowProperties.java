@@ -40,7 +40,13 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 public record MifosFlowProperties(
         @DefaultValue Map<String, BoundaryProperties> boundaries,
         @DefaultValue Map<String, RetryProperties> retry,
-        @DefaultValue Map<String, ExecutorProperties> executors) {
+        @DefaultValue Map<String, ExecutorProperties> executors,
+        @DefaultValue("KUML") RendererType rendererType) {
+
+    public enum RendererType {
+        PLANTUML,
+        KUML
+    }
 
     /// Transaction propagation of a boundary; mirrors Spring's `TransactionDefinition.PROPAGATION_*` constants.
     public enum Propagation {

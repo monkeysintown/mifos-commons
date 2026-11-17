@@ -1,4 +1,57 @@
 [appendix]
+[#appendix-config]
 = Configuration Files
 
-TBD
+This `application.yml` shows all properties of the libraries with their default values.
+Remove the properties that you do not change.
+<<reference-configuration>> gives a description of each property.
+
+[source,yaml]
+----
+mifos:
+  banner: My Service
+  commons:
+    error-url: https://doc.mifos.org/projects/common/errors
+    tui-type: PICO                     # PICO or TAMBOUI; not set: no command line
+    debug:
+      cache-caffeine-enabled: false
+      cache-ehcache-enabled: false
+    transport:
+      rest:
+        headers: [x-mifos-tenant-id]
+        default-page-number: 0
+        default-page-size: 100
+  operation:
+    flow:
+      boundaries:
+        required:
+          propagation: required
+          read-only: false
+        requires-new:
+          propagation: requires-new
+        read-only:
+          propagation: required
+          read-only: true
+        ledger-report:                 # an example of a new boundary
+          propagation: requires-new
+          read-only: true
+          timeout: 30s
+          transaction-manager: reportingTransactionManager
+      retry:
+        conflict:
+          max-attempts: 3
+          initial-backoff: 50ms
+          multiplier: 2.0
+          max-backoff: 1s
+          jitter: 0.5
+          retry-on:
+            - org.springframework.dao.ConcurrencyFailureException
+      executors:
+        default:
+          virtual-threads: true
+          concurrency-limit: -1
+
+application:
+  title: My Service                    # used in the OpenAPI document
+  version: 1.0.0
+----

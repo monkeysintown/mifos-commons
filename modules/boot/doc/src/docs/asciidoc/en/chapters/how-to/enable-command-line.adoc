@@ -1,0 +1,40 @@
+[#how-to-enable-command-line]
+= Make a command line application
+
+The command line modules use picocli or TamboUI.
+The property `mifos.commons.tui-type` selects the module.
+
+== Use picocli
+
+. Add `mifos-commons-boot-cli-pico` to the dependencies.
+. Make a bean that implements `MifosCliPicoCommand`.
+This bean is the root command.
+. Set the property:
++
+[source,yaml]
+----
+mifos:
+  commons:
+    tui-type: PICO
+----
+. Start the application:
+* With arguments, the application runs the command and stops.
+* Without arguments, the application shows the prompt `mfg 🌍`.
+Type `exit`, `quit` or `q` to stop.
+
+== Use TamboUI
+
+. Add `mifos-commons-boot-cli-tamboui` to the dependencies.
+. Make a bean of the type `ToolkitApp`.
+. Set the property:
++
+[source,yaml]
+----
+mifos:
+  commons:
+    tui-type: TAMBOUI
+----
+. Start the application.
+
+NOTE: The module `mifos-commons-boot-cli-shell` (Spring Shell) is not complete.
+It has no auto-configuration.

@@ -1,0 +1,29 @@
+[#how-to-debug-caches]
+= Log cache events
+
+The debug module has listeners that write cache events to the log.
+
+. Add `mifos-commons-boot-debug` to the dependencies.
+. Enable the listener for your cache library:
++
+[source,yaml]
+----
+mifos:
+  commons:
+    debug:
+      cache-caffeine-enabled: true
+      cache-ehcache-enabled: true
+----
+. Set the log level to `DEBUG`:
++
+[source,yaml]
+----
+logging:
+  level:
+    org.mifos.commons.boot.debug: DEBUG
+----
+. Attach the listener bean to your cache:
+* Caffeine: give the `CaffeineRemovalListener` bean to `Caffeine.removalListener(...)`.
+* Ehcache: register the `EhcacheEventListener` bean in the cache event configuration.
+
+The library does not attach the listeners to a cache.

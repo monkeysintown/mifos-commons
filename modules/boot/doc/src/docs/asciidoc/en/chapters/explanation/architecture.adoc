@@ -1,0 +1,53 @@
+[#explanation-architecture]
+= Architecture
+
+The libraries have layers.
+Each layer has one responsibility.
+
+[cols="1,3"]
+|===
+| Layer | Responsibility
+
+| Core
+| The parts that all services need: constants, errors, messages and validation.
+
+| Persistence
+| Access to relational databases.
+
+| Transport
+| Access from other systems: REST, gRPC and RSocket.
+
+| Operation
+| Business logic: usecases and flows.
+
+| Command line
+| Access from a terminal.
+|===
+
+A layer uses only the layers below it.
+The core does not know the other layers.
+The operation layer does not know the transport layer.
+Thus a usecase works the same from a REST call, a gRPC call, a command or a test.
+
+== Core, imperative and reactive modules
+
+Most layers have three kinds of modules:
+
+* A `core` module has the contracts and the parts that do not depend on a programming model.
+* An `imperative` module uses blocking APIs, for example Spring MVC and JDBC.
+* A `reactive` module uses non-blocking APIs, for example Spring WebFlux and R2DBC.
+
+An application selects one model with a starter.
+It does not mix the two models in one layer.
+
+== Auto-configuration
+
+Each module configures itself with Spring Boot auto-configuration.
+You add a module, and its beans are available.
+Most beans have `@ConditionalOnMissingBean`, thus your beans replace them.
+
+== Names instead of objects
+
+Flows refer to transactions, retry policies and executors by name, for example `required` or `conflict`.
+The configuration gives the meaning of each name.
+Thus the business logic does not change when the operation team changes a timeout or a retry policy.

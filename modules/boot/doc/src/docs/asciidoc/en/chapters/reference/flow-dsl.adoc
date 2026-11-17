@@ -1,0 +1,198 @@
+[#reference-flow-dsl]
+= Flow DSL
+
+The DSL is in `org.mifos.commons.boot.operation.flow.MifosFlow.Dsl`.
+Use a static import: `import static org.mifos.commons.boot.operation.flow.MifosFlow.Dsl.*;`
+
+Each method makes a `MifosFlow.Definition`.
+A definition does not run.
+`MifosFlow.Engine.bind` changes a definition into a `MifosFlow` that you can run.
+
+== Parts of a flow
+
+[cols="2,4,2,2"]
+|===
+| DSL | Behavior | PlantUML | BPMN
+
+4+h| Basics
+
+| `noop()`
+| Does nothing. Returns the context without a change.
+| -
+| -
+
+| `act(fn)`
+| Applies `fn` to the context.
+| Action
+| Script task
+
+| `tap(consumer)`
+| Gives the context to `consumer`. The context does not change. Use it for side effects, for example log entries.
+| Signal action
+| Signal event
+
+| `named(name, body)`
+| Gives `body` a name. Interceptors and diagrams use the name.
+| Label or partition
+| Label or sub-process
+
+| `sequence(steps...)`
+| Runs the steps in sequence. Each step receives the context of the step before it.
+| Actions in sequence
+| Sequence flows
+
+4+h| Usecases
+
+| `step(request, usecase, merge)`
+| Makes a request from the context, runs the usecase and merges the response into a new context. `usecase` is a type (a Spring bean) or an instance.
+| Action
+| Service task
+
+| `check(request, usecase)`
+| Runs a usecase that throws an exception if a rule is not satisfied. The context does not change.
+| Action "check"
+| Business rule task
+
+4+h| Control
+
+| `when(condition, then)` +
+`when(condition, then, otherwise)`
+| Runs `then` if the condition is true. Else it runs `otherwise` or nothing.
+| `if` / `else`
+| Exclusive gateways
+
+| `repeatWhile(condition, maxIterations, body)`
+| Runs `body` while the condition is true. Stops with `MIFOS_COMMONS_ERROR_FLOW_ITERATION_LIMIT` after `maxIterations`.
+| `while` loop
+| Gateway loop
+
+| `forEach(items, fold)` +
+`forEach(items, enter, body)`
+| For each item: `enter` puts the item into the context, then `body` runs. Without `body`, only `fold` runs.
+| `while` loop
+| Multi-instance task or gateway loop
+
+| `subflow(enter, body, exit)`
+| Runs `body` with a different context type. `enter` makes the new context. `exit` puts the result into the old context.
+| Partition
+| Sub-process
+
+| `forkJoin(snapshot, forks, merge)` +
+`forkJoin(snapshot, forks, merge, executor)`
+| Runs the forks at the same time. Each fork starts with `snapshot(context)`. `merge` combines the results in the sequence of the forks.
+| `fork`
+| Parallel gateways
+
+4+h| Reliability
+
+| `within(boundary, body)` +
+`body.within(boundary)`
+| Runs `body` in a boundary, usually a transaction.
+| Partition
+| Transactional sub-process
+
+| `retryOn(policy, body)` +
+`body.retryOn(policy)`
+| Runs `body` again if it fails with an exception that the policy accepts.
+| `repeat` loop
+| Error boundary event
+
+| `transactional(boundary, policy, body)`
+| The same as `body.within(boundary).retryOn(policy)`. Each attempt has a new transaction.
+| Partition in loop
+| Error event on sub-process
+
+| `recover(body, when, handler)` +
+`body.recover(when, handler)`
+| If `body` fails with an exception that `when` accepts, `handler` makes the result context from the start context and the exception.
+| Partition
+| Error boundary event
+
+| `saga(steps...)` with `compensable(action, undo)`
+| Runs the actions in sequence. If an action fails, it runs the `undo` of each completed action in the opposite sequence, then throws the exception again.
+| Partition with notes
+| Sub-process
+|===
+
+== References
+
+A flow refers to boundaries, retry policies, executors and usecases.
+A reference is a name, a type or a direct value.
+
+[cols="2,3,3"]
+|===
+| Reference | By name or type | Direct
+
+| `BoundaryRef`
+| `BoundaryRef.REQUIRED`, `REQUIRES_NEW`, `READ_ONLY`, `BoundaryRef.of("name")`
+| `BoundaryRef.of(boundary)`, `BoundaryRef.NONE`
+
+| `MifosFlow.RetryRef`
+| `RetryRef.CONFLICT`, `RetryRef.of("name")`
+| `RetryRef.of(policy)`
+
+| `MifosFlow.ExecutorRef`
+| `ExecutorRef.DEFAULT`, `ExecutorRef.of("name")`
+| `ExecutorRef.of(executor)`
+
+| `UsecaseRef`
+| The usecase class
+| The usecase instance
+|===
+
+The engine finds names and types when it binds the flow.
+Use names in flow definitions, then the definitions do not need Spring.
+
+[#reference-flow-rules]
+== Rules
+
+The engine examines these rules when it binds a flow.
+If a rule is not satisfied, `bind` throws `MifosFlowException` with the code `MIFOS_COMMONS_ERROR_FLOW_DEFINITION`.
+
+. A reference must resolve.
+The boundary, retry policy, executor or usecase must exist.
+. `retryOn` must not be in a boundary.
+When the transaction fails, the database can only roll it back.
+Thus a new attempt in the same transaction cannot succeed.
+. `forkJoin` must not be in a boundary.
+The forks run on different threads and are not in the transaction.
+
+`BoundaryRef.NONE` is not a boundary for these rules.
+
+== Placement
+
+`bind(definition, placement)` tells the engine where the flow runs.
+
+[cols="1,4"]
+|===
+| Placement | Meaning
+
+| `STANDALONE`
+| The flow controls its transactions. No transaction is open when it starts. This is the default.
+
+| `PARTICIPATING`
+| The flow runs in a transaction of the caller, for example a BPMN engine job. The engine applies the rules as if the full flow is in a boundary. Thus `retryOn` and `forkJoin` are not permitted.
+|===
+
+== Error codes of the flow engine
+
+[cols="3,1,3"]
+|===
+| Code | Value | Cause
+
+| `MIFOS_COMMONS_ERROR_FLOW_UNKNOWN`
+| 100040000
+| An unknown flow error.
+
+| `MIFOS_COMMONS_ERROR_FLOW_CLASS_UNKNOWN`
+| 100040010
+| A class name in `retry-on` does not exist.
+
+| `MIFOS_COMMONS_ERROR_FLOW_ITERATION_LIMIT`
+| 100040020
+| `repeatWhile` reached `maxIterations`.
+
+| `MIFOS_COMMONS_ERROR_FLOW_DEFINITION`
+| 100040030
+| A flow does not agree with the rules, or a reference does not resolve.
+|===
