@@ -58,8 +58,6 @@ public class MifosCommonsBootConstants {
     public static final int MIFOS_COMMONS_BOOT_ERROR_CODE_START = 100_000_000;
     /// Default increment between consecutive error codes.
     public static final int MIFOS_COMMONS_BOOT_ERROR_CODE_INCREMENT = 10;
-    /// Increment between the start codes of error code ranges.
-    public static final int MIFOS_COMMONS_BOOT_ERROR_CODE_CATEGORY_INCREMENT = 10_000;
     /// First validation error code.
     public static final int MIFOS_COMMONS_BOOT_ERROR_CODE_VALIDATION_START = 100_010_000;
     /// Increment between consecutive validation error codes.
