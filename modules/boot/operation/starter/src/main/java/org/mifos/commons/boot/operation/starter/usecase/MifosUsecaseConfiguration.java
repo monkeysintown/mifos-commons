@@ -5,7 +5,7 @@
 ///
 package org.mifos.commons.boot.operation.starter.usecase;
 
-import org.mifos.commons.boot.operation.core.usecase.UsecaseResolver;
+import org.mifos.commons.boot.operation.core.usecase.spi.UsecaseResolver;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;

@@ -19,7 +19,7 @@ import java.util.random.RandomGenerator;
 import org.mifos.commons.boot.operation.core.usecase.MifosUsecase;
 import org.mifos.commons.boot.operation.core.usecase.MifosUsecase.MifosRequest;
 import org.mifos.commons.boot.operation.core.usecase.MifosUsecase.MifosResponse;
-import org.mifos.commons.boot.operation.core.usecase.UsecaseRef;
+import org.mifos.commons.boot.operation.core.usecase.spi.UsecaseRef;
 import org.mifos.commons.boot.operation.flow.exception.MifosFlowException;
 import org.mifos.commons.boot.operation.flow.spi.BoundaryRef;
 import org.mifos.commons.boot.operation.flow.spi.ExecutorRef;

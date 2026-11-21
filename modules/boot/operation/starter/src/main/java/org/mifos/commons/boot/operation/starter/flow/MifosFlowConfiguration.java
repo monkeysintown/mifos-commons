@@ -8,7 +8,7 @@ package org.mifos.commons.boot.operation.starter.flow;
 import static org.mifos.commons.boot.operation.starter.flow.MifosFlowProperties.RendererType.PLANTUML;
 
 import io.micrometer.observation.ObservationRegistry;
-import org.mifos.commons.boot.operation.core.usecase.UsecaseResolver;
+import org.mifos.commons.boot.operation.core.usecase.spi.UsecaseResolver;
 import org.mifos.commons.boot.operation.flow.MifosFlow;
 import org.mifos.commons.boot.operation.flow.engine.DefaultFlowEngine;
 import org.mifos.commons.boot.operation.flow.spi.BoundaryResolver;

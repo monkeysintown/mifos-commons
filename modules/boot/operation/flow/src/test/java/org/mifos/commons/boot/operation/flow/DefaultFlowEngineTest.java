@@ -46,7 +46,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mifos.commons.boot.operation.core.usecase.UsecaseResolver;
+import org.mifos.commons.boot.operation.core.usecase.spi.UsecaseResolver;
 import org.mifos.commons.boot.operation.flow.MifosFlow.Definition;
 import org.mifos.commons.boot.operation.flow.MifosFlow.Interceptor;
 import org.mifos.commons.boot.operation.flow.MifosFlow.MifosFlowContext;
